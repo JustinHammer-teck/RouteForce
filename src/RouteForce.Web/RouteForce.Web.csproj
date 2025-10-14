@@ -6,4 +6,22 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\Components\" />
+      <Folder Include="wwwroot\assets\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Htmx" Version="1.9.0" />
+      <PackageReference Include="Htmx.Net.Toast" Version="1.1.1" />
+      <PackageReference Include="Htmx.TagHelpers" Version="1.9.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="wwwroot\package.json" />
+      <Content Remove="wwwroot\pnpm-lock.yaml" />
+      <Content Remove="wwwroot\vite.config.js" />
+      <Content Remove="wwwroot\node_modules\**" />
+    </ItemGroup>
+
 </Project>

@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@source "../Pages/**/*.{razor,cshtml,html}";
+
+@plugin "daisyui" {
+    themes: forest --default --prefersdark;
+}
+
