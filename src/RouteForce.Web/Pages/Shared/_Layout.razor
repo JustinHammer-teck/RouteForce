@@ -1,0 +1,54 @@
+@using Htmx.TagHelpers
+@using RouteForce.Web.Sessions
+
+@inherits LayoutComponentBase
+@inject HtmxRequestContext Request
+@inject IWebHostEnvironment Environment
+
+@{
+    if (Request.IsHtmx())
+    {
+        @Body 
+    }
+    else
+    {
+        <!DOCTYPE html>
+        <html lang="en" data-theme="forest">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="htmx-config" content='{"indicatorClass":"htmx-indicator","historyCacheSize":20,"antiForgery":{"formFieldName":"__RequestVerificationToken","headerName":"RequestVerificationToken","requestToken":"<token>"}}' />
+            <title>RouteForce - Delivery Tracking</title>
+
+            <link rel="icon" type="image/x-icon" href="assets/favicon.png">
+
+            @if (Environment.IsDevelopment())
+            {
+                @* Vite dev server assets *@
+                <script type="module" src="http://localhost:5173/@@vite/client"></script>
+                <script type="module" src="http://localhost:5173/main.js"></script>
+            }
+            else
+            {
+                @* Production built assets *@
+                <link href="/main.css" rel="stylesheet" asp-append-version="true"/>
+                <script src="/main.js" type="module" asp-append-version="true"></script>
+            }
+
+            @* HTMX scripts *@
+            <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+            <script src="https://unpkg.com/htmx.org/dist/ext/remove-me.js"></script>
+            <script src="@HtmxAntiforgeryScriptEndpoints.Path" defer></script>
+            <style>
+                [x-cloak] { display: none !important; }
+            </style>
+        </head>
+        <body hx-ext="preload, remove-me" class="min-h-screen">
+        <div id="app" class="">
+            @Body
+        </div>
+        <_Footer/>
+        </body>
+        </html>
+    }
+}
