@@ -17,16 +17,16 @@ public class SessionManager
     public string? GetFlash(string key)
     {
         if (_httpContextAccessor.HttpContext == null) return "";
-        
+
         var message = _httpContextAccessor.HttpContext.Session.GetString(key);
         _httpContextAccessor.HttpContext.Session.Remove(key);
         return message;
     }
-    
+
     public bool HasKey(string key)
     {
         if (_httpContextAccessor.HttpContext == null) return false;
-        
+
         var message = _httpContextAccessor.HttpContext.Session.GetString(key);
         return !string.IsNullOrEmpty(message);
     }

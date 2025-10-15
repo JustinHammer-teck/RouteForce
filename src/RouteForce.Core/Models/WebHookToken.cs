@@ -25,7 +25,10 @@ public record Token(string Value, TokenType Type, IssuedToType IssuedToType)
         return new Token(tokenValue, type, issuedToType);
     }
 
-    public bool Matches(string providedToken) => Value == providedToken;
+    public bool Matches(string providedToken)
+    {
+        return Value == providedToken;
+    }
 
     private static string GenerateToken()
     {

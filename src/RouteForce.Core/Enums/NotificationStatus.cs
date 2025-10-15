@@ -1,8 +1,8 @@
 namespace RouteForce.Core.Enums;
 
 public enum NotificationStatus
-{ 
-    Pending, 
+{
+    Pending,
     Sent,
     Failed
 }

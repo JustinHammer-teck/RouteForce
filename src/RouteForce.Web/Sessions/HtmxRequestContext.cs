@@ -4,7 +4,8 @@ namespace RouteForce.Web.Sessions;
 
 public class HtmxRequestContext
 {
-    private IHttpContextAccessor _context;
+    private readonly IHttpContextAccessor _context;
+
     public HtmxRequestContext(IHttpContextAccessor context)
     {
         _context = context;

@@ -7,7 +7,6 @@ public class RouteCheckpoint
     public int Id { get; set; }
     public int OrderID { get; set; }
     public int CheckpointID { get; set; }
-    public CheckpointType CheckpointType { get; set; }
     public int ManagedByBusinessID { get; set; }
     public int SequenceNumber { get; set; }
     public RouteCheckPointStatus Status { get; set; } = RouteCheckPointStatus.Pending;
