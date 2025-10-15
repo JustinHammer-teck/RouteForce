@@ -1,6 +1,5 @@
 @using Htmx.TagHelpers
 @using RouteForce.Web.Sessions
-
 @inherits LayoutComponentBase
 @inject HtmxRequestContext Request
 @inject IWebHostEnvironment Environment
@@ -8,7 +7,7 @@
 @{
     if (Request.IsHtmx())
     {
-        @Body 
+        @Body
     }
     else
     {
@@ -17,7 +16,8 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta name="htmx-config" content='{"indicatorClass":"htmx-indicator","historyCacheSize":20,"antiForgery":{"formFieldName":"__RequestVerificationToken","headerName":"RequestVerificationToken","requestToken":"<token>"}}' />
+            <meta name="htmx-config"
+                  content='{"indicatorClass":"htmx-indicator","historyCacheSize":20,"antiForgery":{"formFieldName":"__RequestVerificationToken","headerName":"RequestVerificationToken","requestToken":"<token>"}}'/>
             <title>RouteForce - Delivery Tracking</title>
 
             <link rel="icon" type="image/x-icon" href="assets/favicon.png">
@@ -40,7 +40,9 @@
             <script src="https://unpkg.com/htmx.org/dist/ext/remove-me.js"></script>
             <script src="@HtmxAntiforgeryScriptEndpoints.Path" defer></script>
             <style>
-                [x-cloak] { display: none !important; }
+                [x-cloak] {
+                    display: none !important;
+                }
             </style>
         </head>
         <body hx-ext="preload, remove-me" class="min-h-screen">

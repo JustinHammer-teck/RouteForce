@@ -7,7 +7,7 @@ public class PersonalReceiver
     public string Email { get; set; }
     public string Phone { get; set; }
     public string Notes { get; set; }
-    public DateTime CreatedDate { get; set; } 
+    public DateTime CreatedDate { get; set; }
     public int CheckpointID { get; set; }
     public int CreatedByBusinessID { get; set; }
 }

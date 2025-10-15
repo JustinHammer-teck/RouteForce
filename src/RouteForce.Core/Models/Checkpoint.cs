@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using RouteForce.Core.Enums;
 
 namespace RouteForce.Core.Models;
@@ -21,5 +22,7 @@ public class Checkpoint
     public bool RequiresConfirmation { get; set; } = false;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-    public string Notes { get; set; } 
+    public string Notes { get; set; }
+    
+    public Collection<RouteCheckpoint> RouteCheckpointCollection;
 }
