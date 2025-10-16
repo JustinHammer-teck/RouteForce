@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Notification> Notifications { get; }
     public DbSet<RouteCheckpoint> RouteCheckpoints { get; }
     public DbSet<Checkpoint> Checkpoints { get; }
+    public DbSet<User> Users { get; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

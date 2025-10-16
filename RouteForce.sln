@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteForce.Application.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteForce.Webhook", "src\RouteForce.Webhook\RouteForce.Webhook.csproj", "{700168F1-6F06-4CB8-A13E-13A1626125E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteForce.Infrastructure.Test", "tests\RouteForce.Infrastructure.Test\RouteForce.Infrastructure.Test.csproj", "{27097A0A-C51E-4269-A716-24C66A4F9994}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{700168F1-6F06-4CB8-A13E-13A1626125E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{700168F1-6F06-4CB8-A13E-13A1626125E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{700168F1-6F06-4CB8-A13E-13A1626125E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27097A0A-C51E-4269-A716-24C66A4F9994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27097A0A-C51E-4269-A716-24C66A4F9994}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27097A0A-C51E-4269-A716-24C66A4F9994}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27097A0A-C51E-4269-A716-24C66A4F9994}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C22FCBA5-92D7-487B-9673-DD81524DEA40} = {8D519847-97B4-456A-8287-58F86484271E}
@@ -54,5 +60,6 @@ Global
 		{A532A592-22B8-49AB-9A69-F98D826DAE66} = {8D519847-97B4-456A-8287-58F86484271E}
 		{FB8AB584-448E-4B14-A43F-FC0174C78F36} = {3F80CEC0-F7C9-419A-932B-D4C6B477B6B2}
 		{700168F1-6F06-4CB8-A13E-13A1626125E9} = {8D519847-97B4-456A-8287-58F86484271E}
+		{27097A0A-C51E-4269-A716-24C66A4F9994} = {3F80CEC0-F7C9-419A-932B-D4C6B477B6B2}
 	EndGlobalSection
 EndGlobal

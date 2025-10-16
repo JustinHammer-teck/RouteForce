@@ -7,14 +7,16 @@ public class WebhookToken
 {
     public int Id { get; set; }
     public Token Token { get; set; }
-    public int OrderID { get; set; }
-    public int? IssuedToBusinessID { get; set; }
-    public int? IssuedToPersonalReceiverID { get; set; }
+    public int OrderId { get; set; }
+    public Order Order { get; set; }
+    public int? IssuedToPersonalReceiverId { get; set; }
+    public PersonalReceiver IssuedToPersonalReceiver { get; set; }
     public DateTime ExpirationDate { get; set; }
     public bool IsActive { get; set; } = true;
     public int UsageLimit { get; set; } = 1;
     public int UsedCount { get; set; } = 0;
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public DateTime? LastUsedDate { get; set; }
 }
 
 public record Token(string Value, TokenType Type, IssuedToType IssuedToType)

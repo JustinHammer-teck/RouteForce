@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RouteForce.Core.Enums;
 using RouteForce.Core.Models;
 
 namespace RouteForce.Infrastructure.Persistent.Cofigurations;
@@ -10,15 +11,6 @@ public class RouteCheckpointConfiguration : IEntityTypeConfiguration<RouteCheckp
     {
         builder.HasKey(rc => rc.Id);
 
-        builder.Property(rc => rc.OrderID)
-            .IsRequired();
-
-        builder.Property(rc => rc.CheckpointID)
-            .IsRequired();
-
-        builder.Property(rc => rc.ManagedByBusinessID)
-            .IsRequired();
-
         builder.Property(rc => rc.SequenceNumber)
             .IsRequired();
 
@@ -26,23 +18,28 @@ public class RouteCheckpointConfiguration : IEntityTypeConfiguration<RouteCheckp
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(50)
-            .HasDefaultValue("Pending");
+            .HasDefaultValue(RouteCheckPointStatus.Pending);
 
-        builder.Property(rc => rc.ConfirmedByTokenID)
-            .IsRequired(false);
+        builder.Property(rc => rc.Notes)
+            .HasMaxLength(1000);
 
-        builder.Property(rc => rc.ConfirmationTimestamp)
-            .IsRequired(false);
+        builder.HasOne(rc => rc.Order)
+            .WithMany(o => o.RouteCheckpoints)
+            .HasForeignKey(rc => rc.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(rc => rc.ExpectedArrival)
-            .IsRequired(false);
+        builder.HasOne(rc => rc.Checkpoint)
+            .WithMany(c => c.RouteCheckpoints)
+            .HasForeignKey(rc => rc.CheckpointId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(rc => rc.ActualArrival)
-            .IsRequired(false);
+        builder.HasOne(rc => rc.ConfirmedByToken)
+            .WithMany()
+            .HasForeignKey(rc => rc.ConfirmedByTokenId)
+            .OnDelete(DeleteBehavior.SetNull);
 
-        builder.HasIndex(rc => rc.OrderID);
-        builder.HasIndex(rc => rc.CheckpointID);
+        builder.HasIndex(rc => rc.OrderId);
         builder.HasIndex(rc => rc.Status);
-        builder.HasIndex(rc => new { rc.OrderID, rc.SequenceNumber });
+        builder.HasIndex(rc => new { rc.OrderId, rc.SequenceNumber });
     }
 }

@@ -30,15 +30,6 @@ public class WebHookTokensConfiguration : IEntityTypeConfiguration<WebhookToken>
                 .HasColumnName("IssuedToType");
         });
 
-        builder.Property(wt => wt.OrderID)
-            .IsRequired();
-
-        builder.Property(wt => wt.IssuedToBusinessID)
-            .IsRequired(false);
-
-        builder.Property(wt => wt.IssuedToPersonalReceiverID)
-            .IsRequired(false);
-
         builder.Property(wt => wt.ExpirationDate)
             .IsRequired();
 
@@ -58,7 +49,17 @@ public class WebHookTokensConfiguration : IEntityTypeConfiguration<WebhookToken>
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.HasIndex(wt => wt.OrderID);
+        builder.HasOne(wt => wt.Order)
+            .WithMany(o => o.WebhookTokens)
+            .HasForeignKey(wt => wt.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(wt => wt.IssuedToPersonalReceiver)
+            .WithMany()
+            .HasForeignKey(wt => wt.IssuedToPersonalReceiverId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(wt => wt.OrderId);
         builder.HasIndex(wt => wt.IsActive);
         builder.HasIndex(wt => wt.ExpirationDate);
     }

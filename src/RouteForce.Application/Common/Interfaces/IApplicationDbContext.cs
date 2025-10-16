@@ -9,4 +9,5 @@ public interface IApplicationDbContext
     DbSet<Notification> Notifications { get; }
     DbSet<RouteCheckpoint> RouteCheckpoints { get; }
     DbSet<Checkpoint> Checkpoints { get; }
+    DbSet<User> Users { get; }
 }

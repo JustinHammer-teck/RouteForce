@@ -19,6 +19,7 @@ public class PersonalReceiverConfiguration : IEntityTypeConfiguration<PersonalRe
             .HasMaxLength(255);
 
         builder.Property(pr => pr.Phone)
+            .IsRequired()
             .HasMaxLength(50);
 
         builder.Property(pr => pr.Notes)
@@ -28,14 +29,22 @@ public class PersonalReceiverConfiguration : IEntityTypeConfiguration<PersonalRe
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(pr => pr.CheckpointID)
-            .IsRequired();
+        builder.HasOne(pr => pr.CreatedByBusiness)
+            .WithMany()
+            .HasForeignKey(pr => pr.CreatedByBusinessId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(pr => pr.CreatedByBusinessID)
-            .IsRequired();
+        builder.HasMany(pr => pr.Orders)
+            .WithOne(o => o.PersonalReceiver)
+            .HasForeignKey(o => o.PersonalReceiverId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(pr => pr.SavedAddresses)
+            .WithOne(da => da.PersonalReceiver)
+            .HasForeignKey(da => da.PersonalReceiverId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(pr => pr.Email);
-        builder.HasIndex(pr => pr.CheckpointID);
-        builder.HasIndex(pr => pr.CreatedByBusinessID);
+        builder.HasIndex(pr => pr.CreatedByBusinessId);
     }
 }

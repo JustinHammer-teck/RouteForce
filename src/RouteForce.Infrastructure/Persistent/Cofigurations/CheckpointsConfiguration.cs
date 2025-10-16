@@ -10,44 +10,63 @@ public class CheckpointsConfiguration : IEntityTypeConfiguration<Checkpoint>
     {
         builder.HasKey(c => c.Id);
 
-        builder.Property(c => c.CheckpointName)
+        builder.Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(c => c.AddressLine)
-            .IsRequired()
-            .HasMaxLength(500);
+        builder.OwnsOne(c => c.Address, address =>
+        {
+            address.Property(a => a.AddressLine)
+                .IsRequired()
+                .HasMaxLength(500)
+                .HasColumnName("AddressLine");
 
-        builder.Property(c => c.City)
-            .IsRequired()
-            .HasMaxLength(100);
+            address.Property(a => a.City)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("City");
 
-        builder.Property(c => c.State)
-            .IsRequired()
-            .HasMaxLength(100);
+            address.Property(a => a.State)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("State");
 
-        builder.Property(c => c.PostalCode)
-            .IsRequired()
-            .HasMaxLength(20);
+            address.Property(a => a.PostalCode)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasColumnName("PostalCode");
 
-        builder.Property(c => c.Country)
-            .IsRequired()
-            .HasMaxLength(100);
+            address.Property(a => a.Country)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("Country");
 
-        builder.Property(c => c.Latitude)
-            .HasPrecision(9, 6);
+            address.Property(a => a.Latitude)
+                .HasPrecision(9, 6)
+                .HasColumnName("Latitude");
 
-        builder.Property(c => c.Longitude)
-            .HasPrecision(9, 6);
+            address.Property(a => a.Longitude)
+                .HasPrecision(9, 6)
+                .HasColumnName("Longitude");
+        });
 
-        builder.Property(c => c.ContactName)
-            .HasMaxLength(200);
+        builder.OwnsOne(c => c.ContactPoint, contact =>
+        {
+            contact.Property(cp => cp.Name)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("ContactName");
 
-        builder.Property(c => c.ContactPhone)
-            .HasMaxLength(50);
+            contact.Property(cp => cp.Phone)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("ContactPhone");
 
-        builder.Property(c => c.ContactEmail)
-            .HasMaxLength(255);
+            contact.Property(cp => cp.Email)
+                .IsRequired()
+                .HasMaxLength(255)
+                .HasColumnName("ContactEmail");
+        });
 
         builder.Property(c => c.CheckpointType)
             .IsRequired()
@@ -69,8 +88,22 @@ public class CheckpointsConfiguration : IEntityTypeConfiguration<Checkpoint>
         builder.Property(c => c.Notes)
             .HasMaxLength(1000);
 
+        builder.HasOne(c => c.ManagedByBusiness)
+            .WithMany(b => b.Warehouses)
+            .HasForeignKey(c => c.ManagedByBusinessId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(c => c.DeliveryServiceTemplate)
+            .WithMany(dst => dst.ServiceCheckpoints)
+            .HasForeignKey(c => c.DeliveryServiceTemplateId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasMany(c => c.RouteCheckpoints)
+            .WithOne(rc => rc.Checkpoint)
+            .HasForeignKey(rc => rc.CheckpointId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(c => c.CheckpointType);
         builder.HasIndex(c => c.IsActive);
-        builder.HasIndex(c => new { c.City, c.State });
     }
 }
