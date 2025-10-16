@@ -9,7 +9,7 @@ export default defineConfig({
     publicDir: 'assets',
     build: {
         manifest: true,
-        outDir: '../dist',
+        outDir: './dist',
         emptyOutDir: true,
         assetsDir: '',
         rollupOptions: {
