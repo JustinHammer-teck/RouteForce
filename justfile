@@ -13,4 +13,7 @@ help:
     dotnet run --project src/tui -- help
     
 migrate-add MIGRATION:
-    dotnet ef migrations add "{{ MIGRATION }}" --project src\\RouteForce.Infrastructure --startup-project src\\RouteForce.Web --output-dir Persistent\\Migrations
+    dotnet ef migrations add "{{ MIGRATION }}" --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web --output-dir Persistent/Migrations
+
+migrate-update: 
+    dotnet ef database update --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web

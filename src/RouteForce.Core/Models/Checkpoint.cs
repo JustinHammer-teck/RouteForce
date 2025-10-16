@@ -1,28 +1,33 @@
-using System.Collections.ObjectModel;
 using RouteForce.Core.Enums;
 
 namespace RouteForce.Core.Models;
 
+
+public record Address(
+    string AddressLine,
+    string City,
+    string State,
+    string PostalCode,
+    string Country,
+    decimal? Latitude,
+    decimal? Longitude);
+
+public record ContactPoint(string Name, string Phone, string Email);
+
 public class Checkpoint
 {
     public int Id { get; set; }
-    public string CheckpointName { get; set; }
-    public string AddressLine { get; set; }
-    public string City { get; set; }
-    public string State { get; set; }
-    public string PostalCode { get; set; }
-    public string Country { get; set; }
-    public decimal? Latitude { get; set; }
-    public decimal? Longitude { get; set; }
-    public string ContactName { get; set; }
-    public string ContactPhone { get; set; }
-    public string ContactEmail { get; set; }
+    public string Name { get; set; }
+    public Address Address { get; set; }
+    public ContactPoint ContactPoint { get; set; }
     public CheckpointType CheckpointType { get; set; }
-    public int? ManagedByBusinessID { get; set; }
+    public int? ManagedByBusinessId { get; set; }
+    public int? DeliveryServiceTemplateId { get; set; }
     public bool RequiresConfirmation { get; set; } = false;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-    public string Notes { get; set; }
-    
-    public Collection<RouteCheckpoint> RouteCheckpointCollection;
+    public string Notes { get; set; } = string.Empty;
+    public DeliveryServiceTemplate DeliveryServiceTemplate { get; set; }
+    public Business ManagedByBusiness { get; set; }
+    public ICollection<RouteCheckpoint> RouteCheckpoints { get; set; } = new List<RouteCheckpoint>();
 }

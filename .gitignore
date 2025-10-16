@@ -1,6 +1,6 @@
 *_archive.tar
 /.direnv
-
+app.db
 nohup*
 
 #Node Stuff

@@ -6,8 +6,11 @@ public class PersonalReceiver
     public string Name { get; set; }
     public string Email { get; set; }
     public string Phone { get; set; }
-    public string Notes { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public int CheckpointID { get; set; }
-    public int CreatedByBusinessID { get; set; }
+    public int CreatedByBusinessId { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public string Notes { get; set; } = string.Empty;
+
+    public Business CreatedByBusiness { get; set; }
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+    public ICollection<DeliveryAddress> SavedAddresses { get; set; } = new List<DeliveryAddress>();
 }

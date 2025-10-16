@@ -6,9 +6,9 @@ using RouteForce.Infrastructure.Persistent;
 
 namespace RouteForce.Infrastructure;
 
-public static class DependencyInjection
+public static class ServiceConfigurations
 {
-    public static ServiceCollection AddInfrastructure(this ServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
