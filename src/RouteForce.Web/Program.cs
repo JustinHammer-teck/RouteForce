@@ -1,11 +1,7 @@
-using Microsoft.AspNetCore.Identity;
+using RouteForce.Application.Service;
+
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
-
-app.MapGet("/", () => "Hello World!");
-
-app.Run();
 
 builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
 {
@@ -15,6 +11,10 @@ builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", opt
 });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 
 var app = builder.Build();
 
@@ -32,11 +32,9 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name:"default", 
-    pattern:"{controller}=Home}/{action=index}/{id}");
+    pattern:"{controller}=Home/{action=index}/{id}");
 
 app.Run();
 
 
 
-builder.Services.AddScoped<IUserRepository, YourUserRepositoryImplementation>();
-builder.Services.AddScoped<IPasswordHasher, YourPasswordHasherImplementation>();

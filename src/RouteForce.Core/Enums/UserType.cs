@@ -3,5 +3,6 @@
 public enum UserType
 {
     Admin = 0, 
-    AppUser = 1
+    AppUser = 1,
+    Business = 1
 }

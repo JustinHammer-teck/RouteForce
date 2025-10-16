@@ -6,4 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RouteForce.Application\RouteForce.Application.csproj" />
+    </ItemGroup>
+
 </Project>

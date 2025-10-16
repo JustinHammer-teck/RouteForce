@@ -4,9 +4,10 @@ namespace RouteForce.Core.Model;
 
 public class User
 {
-    public string UserId { get; set; }
-    public string UserName { get; set; }
+    public int UserId { get; set; }
+    public string Username { get; set; }
     public string Password { get; set; }
+    public string Name { get; set; } = string.Empty;
     public UserType UserType { get; set; }
     public int BusinessId { get; set; }
     public string BusinessName { get; set; } = string.Empty;
