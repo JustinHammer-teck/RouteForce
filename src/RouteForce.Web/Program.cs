@@ -7,6 +7,7 @@ using RouteForce.Application;
 using RouteForce.Infrastructure;
 using RouteForce.Web;
 using RouteForce.Web.Configurations;
+using RouteForce.Web.Pages.Home;
 using RouteForce.Web.Pages.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,7 +61,6 @@ app.MapGet("/error/{http_error_code}", (
         StatusCodeParam = http_error_code, CustomMessage = msg
     }));
 
-app.MapGet("/", () =>
-    Results.Redirect("/admin/dashboard"));
+app.MapGet("/", () => new RazorComponentResult<Home>());
 
 app.Run();

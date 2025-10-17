@@ -23,6 +23,8 @@ public class Order
     public DateTime? ActualDeliveryDate { get; set; }
     public string Notes { get; set; } = string.Empty;
 
+    public string ProductReferenceId { get; set; }
+
     public ICollection<RouteCheckpoint> RouteCheckpoints { get; set; } = new List<RouteCheckpoint>();
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     public ICollection<WebhookToken> WebhookTokens { get; set; } = new List<WebhookToken>();

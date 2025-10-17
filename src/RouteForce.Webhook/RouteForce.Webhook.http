@@ -1,6 +1,0 @@
-@RouteForce.Webhook_HostAddress = http://localhost:5206
-
-GET {{RouteForce.Webhook_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
