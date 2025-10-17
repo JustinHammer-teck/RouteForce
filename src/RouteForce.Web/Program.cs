@@ -8,10 +8,32 @@ using RouteForce.Infrastructure;
 using RouteForce.Web;
 using RouteForce.Web.Configurations;
 using RouteForce.Web.Pages.Shared;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
+builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
+
+var cookiePolicyOptions = new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+};
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Forbidden/";
+
+    });
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSecurity(configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(configuration);
@@ -19,9 +41,10 @@ builder.Services.AddWebApplication(configuration);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseHsts();
 }
 else
 {
@@ -51,6 +74,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapEndpoints();
+app.MapDefaultControllerRoute();
+app.UseCookiePolicy(cookiePolicyOptions);
+
 
 app.MapGet("/error/{http_error_code}", (
         [FromRoute] string http_error_code,
