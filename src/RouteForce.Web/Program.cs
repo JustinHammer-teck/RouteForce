@@ -42,16 +42,18 @@ else
 
 app.UseHttpsRedirection();
 app.UseStatusCodePagesWithReExecute("/error/{0}");
-app.UseCors("htmxcorspolicy");
-app.MapHtmxAntiforgeryScript();
-app.UseNotyf();
-app.UseAntiforgery();
+
 app.UseStaticFiles();
 app.UseRouting();
+app.MapHtmxAntiforgeryScript();
+app.UseCors("htmxcorspolicy");
+app.UseSession();
+app.UseAntiforgery(); // Order matter
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapEndpoints();
+app.UseNotyf();
 
 app.MapGet("/error/{http_error_code}", (
         [FromRoute] string http_error_code,

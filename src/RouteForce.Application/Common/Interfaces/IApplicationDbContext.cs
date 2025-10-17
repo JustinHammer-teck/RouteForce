@@ -10,4 +10,5 @@ public interface IApplicationDbContext
     DbSet<RouteCheckpoint> RouteCheckpoints { get; }
     DbSet<Checkpoint> Checkpoints { get; }
     DbSet<User> Users { get; }
+    DbSet<Business> Businesses { get; }
 }

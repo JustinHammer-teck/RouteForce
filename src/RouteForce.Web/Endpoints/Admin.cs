@@ -11,11 +11,15 @@ public class Admin : EndpointGroupBase
         groupBuilder.RequireAuthorization(opt => 
             opt.RequireRole("Admin"));
         
+        /*
         groupBuilder.MapGet("dashboard", Dashboard)
             .RequireAuthorization(opt =>
             {
                 opt.RequireRole("AppUser");
             });
+            */
+        
+        groupBuilder.MapGet("dashboard", Dashboard).AllowAnonymous();
     }
 
     public async Task<RazorComponentResult> Dashboard()

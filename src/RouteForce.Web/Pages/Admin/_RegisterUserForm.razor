@@ -1,0 +1,97 @@
+<form hx-post="/users/register/user"
+      hx-target="#form-container"
+      hx-swap="outerHTML"
+      class="space-y-4">
+
+    <h3 class="text-xl font-semibold mb-4">User Details</h3>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Username</span>
+        </label>
+        <input type="text"
+               name="UserName"
+               required
+               placeholder="johndoe"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Email</span>
+        </label>
+        <input type="email"
+               name="Email"
+               required
+               placeholder="you@example.com"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Phone</span>
+        </label>
+        <input type="tel"
+               name="Phone"
+               required
+               placeholder="+61 4XX XXX XXX"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="label">
+                <span class="label-text">Password</span>
+            </label>
+            <input type="password"
+                   id="password"
+                   name="Password"
+                   required
+                   minlength="8"
+                   placeholder="••••••••"
+                   class="input input-bordered w-full" />
+            <label class="label">
+                <span class="label-text-alt">Minimum 8 characters</span>
+            </label>
+        </div>
+
+        <div>
+            <label class="label">
+                <span class="label-text">Confirm Password</span>
+            </label>
+            <input type="password"
+                   id="confirm-password"
+                   required
+                   placeholder="••••••••"
+                   class="input input-bordered w-full" />
+            <label class="label">
+                <span class="label-text-alt" id="password-match-message"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="flex justify-between">
+        <button type="button"
+                hx-get="/users/register/business"
+                hx-target="#form-container"
+                hx-swap="outerHTML"
+                class="btn btn-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Back
+        </button>
+        <button type="submit" id="submit-btn" class="btn btn-primary" disabled>
+            Create Account
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        </button>
+    </div>
+
+    <AntiforgeryToken/>
+</form>
+
+@code {
+
+}

@@ -36,7 +36,13 @@ public static class ServiceConfigurations
                 }
             };
         });
-
+        
+        services.AddSession(options => {
+            options.Cookie.Name = ".register-user.form";
+            options.IdleTimeout = TimeSpan.FromMinutes(5);
+        });
+        
+        services.AddTransient<SessionManager>();    
         services.AddTransient<HtmxRequestContext>();
         
         return services;
@@ -65,6 +71,8 @@ public static class ServiceConfigurations
                         .WithExposedHeaders(HtmxResponseHeaders.Keys.All);
                 });
         });
+        
+        
 
         return services;
     }
