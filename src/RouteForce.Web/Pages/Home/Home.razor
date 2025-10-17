@@ -2,41 +2,187 @@
 @using RouteForce.Web.Pages.Shared
 @layout _Layout;
 
-<section class="w-full h-full flex flex-row justify-center">
-    <div class="card w-full max-w-md shadow-lg bg-base-100">
-        <div class="card-body">
-            <h2 class="text-2xl font-bold text-center mb-6">Log in to Your Account</h2>
-            <form class="space-y-5" action="/login" method="POST">
-                <div>
-                    <label class="label">
-                        <span class="label-text">Email</span>
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        required
-                        placeholder="you@example.com"
-                        class="input input-bordered w-full"
-                    />
-                </div>
-                <div>
-                    <label class="label">
-                        <span class="label-text">Password</span>
-                    </label>
-                    <input
-                        type="password"
-                        name="password"
-                        required
-                        placeholder="••••••••"
-                        class="input input-bordered w-full"
-                    />
-                </div>
-                <button type="submit" class="btn btn-primary w-full">Sign In</button>
-                <AntiforgeryToken/>
-            </form>
-        </div>
+
+
+  <!-- Navbar with Dropdown -->
+  <div class="navbar bg-base-200 shadow-sm">
+    <div class="flex-1">
+      <a class="btn btn-ghost normal-case text-2xl font-bold text-green-600">RouteForce</a>
     </div>
+    <div class="flex-none gap-4">
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost">Menu</div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <button class="btn btn-primary">Sign Up</button>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero min-h-screen bg-gradient-to-r from-green-600 to-green-400 text-white">
+    <div class="hero-content text-center">
+      <div>
+        <h1 class="text-5xl font-bold mb-4">Automated Delivery Confirmation That Actually Works</h1>
+        <p class="max-w-2xl mx-auto mb-6 text-lg opacity-90">
+          Simplify proof of delivery with one-click email confirmations and real-time tracking.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button class="btn btn-primary btn-lg">Start Free Trial</button>
+          <button class="btn btn-outline text-white border-white hover:bg-white hover:text-green-600 btn-lg">Request Demo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Partners Carousel -->
+<section class="relative py-20 bg-base-200 text-center">
+  <h2 class="text-3xl font-bold mb-6">Our Trusted Partners</h2>
+  <p class="text-gray-600 mb-8">RouteForce integrates seamlessly with industry leaders in logistics and e-commerce.</p>
+
+  <div class="carousel w-full max-w-4xl mx-auto rounded-box bg-base-100 shadow p-6">
+    <div id="partner1" class="carousel-item w-full justify-center">
+      <img src="https://via.placeholder.com/250x100?text=Amazon+Logistics" alt="Amazon Logistics" class="w-64 object-contain" />
+      <a href="#partner5" class="btn btn-circle absolute left-5 top-1/2">❮</a>
+      <a href="#partner2" class="btn btn-circle absolute right-5 top-1/2">❯</a>
+    </div>
+
+    <div id="partner2" class="carousel-item w-full justify-center">
+      <img src="https://via.placeholder.com/250x100?text=FedEx" alt="FedEx" class="w-64 object-contain" />
+      <a href="#partner1" class="btn btn-circle absolute left-5 top-1/2">❮</a>
+      <a href="#partner3" class="btn btn-circle absolute right-5 top-1/2">❯</a>
+    </div>
+
+    <div id="partner3" class="carousel-item w-full justify-center">
+      <img src="https://via.placeholder.com/250x100?text=UPS" alt="UPS" class="w-64 object-contain" />
+      <a href="#partner2" class="btn btn-circle absolute left-5 top-1/2">❮</a>
+      <a href="#partner4" class="btn btn-circle absolute right-5 top-1/2">❯</a>
+    </div>
+
+    <div id="partner4" class="carousel-item w-full justify-center">
+      <img src="https://via.placeholder.com/250x100?text=DHL" alt="DHL" class="w-64 object-contain" />
+      <a href="#partner3" class="btn btn-circle absolute left-5 top-1/2">❮</a>
+      <a href="#partner5" class="btn btn-circle absolute right-5 top-1/2">❯</a>
+    </div>
+
+    <div id="partner5" class="carousel-item w-full justify-center">
+      <img src="https://via.placeholder.com/250x100?text=Shopify" alt="Shopify" class="w-64 object-contain" />
+      <a href="#partner4" class="btn btn-circle absolute left-5 top-1/2">❮</a>
+      <a href="#partner1" class="btn btn-circle absolute right-5 top-1/2">❯</a>
+    </div>
+  </div>
 </section>
+
+  <!-- Features List -->
+  <section id="features" class="py-20">
+    <div class="max-w-6xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-6">Core Features</h2>
+      <ul class="list-disc list-inside text-left mx-auto max-w-3xl text-lg space-y-2">
+        <li>✅ One-click delivery confirmation (no login required)</li>
+        <li>🔐 Cryptographically secure, expiring tokens</li>
+        <li>📦 Real-time tracking dashboard</li>
+        <li>📨 Professional email templates</li>
+        <li>🧾 IP and timestamp audit trail</li>
+        <li>⚙️ Easy integration with carriers</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Simple Bar Graph (using Tailwind utility bars) -->
+  <section class="py-20 bg-base-200 text-center">
+    <h2 class="text-3xl font-bold mb-6">Delivery Confirmation Rates</h2>
+    <div class="max-w-lg mx-auto">
+      <div class="flex items-center mb-2">
+        <span class="w-24 text-left">Before</span>
+        <div class="bg-gray-300 h-4 w-1/2 rounded"></div>
+        <span class="ml-4">45%</span>
+      </div>
+      <div class="flex items-center">
+        <span class="w-24 text-left">With RouteForce</span>
+        <div class="bg-green-500 h-4 w-4/5 rounded"></div>
+        <span class="ml-4">90%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal + Context Menu Example -->
+  <section id="security" class="py-20 text-center">
+    <h2 class="text-3xl font-bold mb-4">Security First</h2>
+    <p class="mb-8 text-gray-600">Every confirmation is tracked and encrypted for full reliability.</p>
+
+    <div class="dropdown dropdown-top mb-6">
+      <div tabindex="0" role="button" class="btn btn-outline">Context Menu</div>
+      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+        <li><a>View Logs</a></li>
+        <li><a>View API Tokens</a></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary" onclick="confirmModal.showModal()">Learn More</button>
+    <dialog id="confirmModal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Enterprise-Grade Security</h3>
+        <p>All confirmations are logged with timestamp, IP, and cryptographically secure signatures.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn">Close</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+  </section>
+
+  <!-- Pricing Section (card grid) -->
+  <section id="pricing" class="py-20 bg-base-200 text-center">
+    <h2 class="text-3xl font-bold mb-8">Simple Pricing</h2>
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
+      <div class="card bg-base-100 shadow p-6">
+        <h3 class="text-xl font-bold mb-2">Starter</h3>
+        <p class="text-2xl font-semibold mb-4">$0 / mo</p>
+        <ul class="text-left list-disc list-inside mb-6">
+          <li>Up to 50 deliveries</li>
+          <li>Email confirmation</li>
+          <li>Basic dashboard</li>
+        </ul>
+        <button class="btn btn-primary w-full">Choose Plan</button>
+      </div>
+      <div class="card bg-base-100 shadow-lg border border-green-500 p-6">
+        <h3 class="text-xl font-bold mb-2">Pro</h3>
+        <p class="text-2xl font-semibold mb-4">$49 / mo</p>
+        <ul class="text-left list-disc list-inside mb-6">
+          <li>Unlimited deliveries</li>
+          <li>Custom branding</li>
+          <li>Full audit trail</li>
+        </ul>
+        <button class="btn btn-success w-full">Most Popular</button>
+      </div>
+      <div class="card bg-base-100 shadow p-6">
+        <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+        <p class="text-2xl font-semibold mb-4">Contact Us</p>
+        <ul class="text-left list-disc list-inside mb-6">
+          <li>Custom API integration</li>
+          <li>Dedicated support</li>
+          <li>SLA & onboarding</li>
+        </ul>
+        <button class="btn btn-outline w-full">Contact Sales</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-20 text-center">
+    <h2 class="text-3xl font-bold mb-4">Get in Touch</h2>
+    <p class="mb-6 text-gray-600">Have questions? We're here to help.</p>
+    <div class="form-control max-w-md mx-auto space-y-3">
+      <input type="text" placeholder="Your Name" class="input input-bordered w-full" />
+      <input type="email" placeholder="Your Email" class="input input-bordered w-full" />
+      <textarea class="textarea textarea-bordered w-full" placeholder="Message"></textarea>
+      <button class="btn btn-primary w-full">Send Message</button>
+    </div>
+  </section>
 
 @code {
 
