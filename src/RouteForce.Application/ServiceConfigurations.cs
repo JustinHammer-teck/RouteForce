@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using RouteForce.Application.Common.Interfaces;
 
 namespace RouteForce.Application;
 

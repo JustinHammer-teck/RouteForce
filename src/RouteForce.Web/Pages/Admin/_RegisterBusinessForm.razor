@@ -1,6 +1,9 @@
+@using FluentValidation.Results
+@using RouteForce.Application.Common.DTOs
+@using RouteForce.Web.Sessions
 <form hx-post="/users/register/business"
       hx-target="#form-container"
-      hx-swap="outerHTML"
+      hx-swap="innerHTML"
       class="space-y-4">
 
     <h3 class="text-xl font-semibold mb-4">Business Information</h3>
@@ -12,11 +15,19 @@
         <input type="text"
                name="Name"
                required
+               value="@(SavedRequest?.Name ?? "")"
                placeholder="My Company LLC"
                class="input input-bordered w-full" />
     </div>
 
-       <_AddressSuggestion></_AddressSuggestion> 
+   <_AddressSuggestion
+        AddressLine="@SavedRequest?.AddressLine"
+        City="@SavedRequest?.City"
+        State="@SavedRequest?.State"
+        PostalCode="@SavedRequest?.PostalCode"
+        Country="@SavedRequest?.Country"
+        Latitude="@SavedRequest?.Latitude"
+        Longitude="@SavedRequest?.Longitude" /> 
 
     <div>
         <label class="label">
@@ -25,7 +36,7 @@
         <textarea name="Notes"
                   placeholder="Additional information about your business"
                   class="textarea textarea-bordered w-full"
-                  rows="3"></textarea>
+                  rows="3">@(SavedRequest?.Notes ?? "")</textarea>
     </div>
 
     <div class="flex justify-end">
@@ -41,5 +52,7 @@
 </form>
 
 @code {
-
+    [Parameter] public SessionManager Session { get; set; }
+    [Parameter] public ValidationResult ValidationResult { get; set; }
+    [Parameter] public CreateBusinessRequest? SavedRequest { get; set; }
 }

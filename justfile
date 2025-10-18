@@ -4,16 +4,19 @@ default:
     just --list
     
 run:
-    dotnet run --project src/tui
+    dotnet run --project src/RouteForce.Web
     
 init:
-    dotnet run --project src/tui -- init
+    dotnet run --project src/RouteForce.Web -- init
     
 help:
-    dotnet run --project src/tui -- help
+    dotnet run --project src/RouteForce.Web -- help
 
 migrate-list:
-    dotnet ef migrations list --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web --output-dir Persistent/Migrations
+    dotnet ef migrations list --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web
+
+migrate-remove:
+    dotnet ef migrations remove --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web
 
 migrate-add MIGRATION:
     dotnet ef migrations add "{{ MIGRATION }}" --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web --output-dir Persistent/Migrations

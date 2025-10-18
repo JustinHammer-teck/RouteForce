@@ -17,14 +17,14 @@
                 @if (FormStep == 1)
                 {   
                     <div hx-get="/users/register/business"
-                         hx-swap="outerHTML"
+                         hx-swap="innerHTML"
                          hx-trigger="load">
                     </div>
                 }
                 else
                 {
                     <div hx-get="/users/register/user"
-                         hx-swap="outerHTML"
+                         hx-swap="innerHTML"
                          hx-trigger="load">
                     </div>
                 }

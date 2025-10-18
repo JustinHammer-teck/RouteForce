@@ -6,5 +6,4 @@ public record CreateUserRequest(
     string UserName,
     string Password,
     string Email,
-    string Phone,
-    UserRole UserRole);
+    string Phone);

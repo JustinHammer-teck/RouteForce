@@ -1,8 +1,10 @@
+using System.Text.Json;
 using Htmx.Net.Toast.Abstractions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using RouteForce.Application.Common.DTOs;
 using RouteForce.Application.Common.Interfaces;
+using RouteForce.Core.Enums;
 using RouteForce.Web.Configurations;
 using RouteForce.Web.Pages.Admin;
 using RouteForce.Web.Pages.Home;
@@ -22,7 +24,6 @@ public class Users : EndpointGroupBase
         groupBuilder.MapPost("register/business", RegisterBusiness).AllowAnonymous();
         groupBuilder.MapGet("register/user", RegisterUserForm).AllowAnonymous();
         groupBuilder.MapPost("register/user", RegisterUser).AllowAnonymous();
-        groupBuilder.MapPost("register", Register).AllowAnonymous();
     }
     
     public async Task<RazorComponentResult> LoginPage()
@@ -37,7 +38,7 @@ public class Users : EndpointGroupBase
         return Results.Ok();     
     }
     
-    public async Task<RazorComponentResult> RegisterPage(
+    private async Task<RazorComponentResult> RegisterPage(
         SessionManager sessionManager, 
         INotyfService notyf)
     {
@@ -51,15 +52,34 @@ public class Users : EndpointGroupBase
         );
     }
 
-    public async Task<IResult> RegisterBusinessForm()
+    private IResult RegisterBusinessForm(SessionManager sessionManager)
     {
-        return new RazorComponentResult<_RegisterBusinessForm>();
+        if (!sessionManager.HasKey("CreateBusinessRequest"))
+        {
+            return new RazorComponentResult<_RegisterBusinessForm>(new { Session = sessionManager });
+        }
+
+        var businessJson = sessionManager.GetSessionValue("CreateBusinessRequest");
+        var savedRequest = JsonSerializer.Deserialize<CreateBusinessRequest>(businessJson);
+
+        sessionManager.SetSessionValue("CreateBusinessRequest", businessJson);
+
+        return new RazorComponentResult<_RegisterBusinessForm>(
+            new {
+                Session = sessionManager,
+                SavedRequest = savedRequest
+            });
     }
 
-    [ValidateAntiForgeryToken] 
-    public async Task<IResult> RegisterBusiness([FromForm] CreateBusinessRequest request)
+    [ValidateAntiForgeryToken]
+    public async Task<IResult> RegisterBusiness(
+        [FromForm] CreateBusinessRequest request,
+        SessionManager sessionManager)
     {
-        return new RazorComponentResult<_RegisterBusinessForm>();
+        var businessJson = JsonSerializer.Serialize(request);
+        sessionManager.SetSessionValue("CreateBusinessRequest", businessJson);
+
+        return new RazorComponentResult<_RegisterUserForm>();
     }
 
     public async Task<IResult> RegisterUserForm()
@@ -67,17 +87,64 @@ public class Users : EndpointGroupBase
         return new RazorComponentResult<_RegisterUserForm>();
     }
         
-    [ValidateAntiForgeryToken] 
-    public async Task<IResult> RegisterUser()
-    {
-        return Results.Created();
-    }
-    
-    public async Task<IResult> Register(
+    [ValidateAntiForgeryToken]
+    public async Task<IResult> RegisterUser(
+        [FromForm] CreateUserRequest userRequest,
         SessionManager sessionManager,
+        IApplicationDbContext context,
         INotyfService notyf)
     {
-        notyf.Success("Successful Create User & Business", 1);  
-        return Results.Created();
+        if (!sessionManager.HasKey("CreateBusinessRequest"))
+        {
+            notyf.Error("Business information not found. Please start from the beginning.", 3);
+            return Results.Redirect("/users/register");
+        }
+
+        var businessJson = sessionManager.GetSessionValue("CreateBusinessRequest");
+        var businessRequest = JsonSerializer.Deserialize<CreateBusinessRequest>(businessJson);
+
+        if (businessRequest == null)
+        {
+            notyf.Error("Invalid business data. Please try again.", 3);
+            return Results.Redirect("/users/register");
+        }
+
+        var user = new Core.Models.User
+        {
+            Name = userRequest.UserName,
+            Password = userRequest.Password,
+            Email = userRequest.Email,
+            Phone = userRequest.Phone,
+            UserRole = UserRole.Admin,
+            CreatedDate = DateTime.UtcNow,
+        };
+
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var business = new Core.Models.Business
+        {
+            Name = businessRequest.Name,
+            BusinessAddress = new Core.Models.Address(
+                businessRequest.AddressLine,
+                businessRequest.City,
+                businessRequest.State,
+                businessRequest.PostalCode,
+                businessRequest.Country,
+                businessRequest.Latitude,
+                businessRequest.Longitude),
+            Notes = businessRequest.Notes ?? string.Empty,
+            IsActive = true,
+            CreatedDate = DateTime.UtcNow,
+        };
+
+        await context.Businesses.AddAsync(business);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        user.BusinessId = business.Id;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        notyf.Success("Account created successfully!", 3);
+        return Results.Redirect("/users/login");
     }
 }
