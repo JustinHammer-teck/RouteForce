@@ -72,11 +72,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(o => o.PersonalReceiverId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(o => o.DeliveryServiceTemplate)
-            .WithMany(dst => dst.Orders)
-            .HasForeignKey(o => o.DeliveryServiceTemplateId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         builder.HasOne(o => o.SelectedDeliveryAddress)
             .WithMany()
             .HasForeignKey(o => o.SelectedDeliveryAddressId)

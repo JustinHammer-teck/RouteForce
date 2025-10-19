@@ -1,0 +1,94 @@
+@using RouteForce.Application.Common.DTOs
+
+<form hx-post="/receivers/register"
+      hx-target="#form-container"
+      hx-swap="outerHTML"
+      class="space-y-4">
+
+    <h3 class="text-xl font-semibold mb-4">Receiver Details</h3>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Receiver Name</span>
+        </label>
+        <input type="text"
+               name="Name"
+               required
+               value="@(SavedRequest?.Name ?? "")"
+               placeholder="John Doe"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Email</span>
+        </label>
+        <input type="email"
+               name="Email"
+               required
+               value="@(SavedRequest?.Email ?? "")"
+               placeholder="receiver@example.com"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Phone</span>
+        </label>
+        <input type="tel"
+               name="Phone"
+               required
+               value="@(SavedRequest?.Phone ?? "")"
+               placeholder="+61 4XX XXX XXX"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div class="divider">Delivery Address</div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Address Label (Optional)</span>
+        </label>
+        <input type="text"
+               name="AddressLabel"
+               value="@(SavedRequest?.AddressLabel ?? "")"
+               placeholder="e.g., Home, Office, Warehouse"
+               class="input input-bordered w-full" />
+    </div>
+
+    <_AddressSuggestion
+        AddressLine="@SavedRequest?.AddressLine"
+        City="@SavedRequest?.City"
+        State="@SavedRequest?.State"
+        PostalCode="@SavedRequest?.PostalCode"
+        Country="@SavedRequest?.Country"
+        Latitude="@SavedRequest?.Latitude"
+        Longitude="@SavedRequest?.Longitude" />
+
+    <div>
+        <label class="label">
+            <span class="label-text">Notes (Optional)</span>
+        </label>
+        <textarea name="Notes"
+                  placeholder="Additional delivery instructions or notes about the receiver"
+                  class="textarea textarea-bordered w-full"
+                  rows="3">@(SavedRequest?.Notes ?? "")</textarea>
+    </div>
+
+    <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-outline">
+            Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+            Save Receiver
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+            </svg>
+        </button>
+    </div>
+
+</form>
+
+@code {
+    [Parameter] public CreateReceiverRequest? SavedRequest { get; set; }
+}

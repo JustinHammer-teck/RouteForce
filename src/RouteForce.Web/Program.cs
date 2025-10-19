@@ -43,10 +43,8 @@ app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.UseStaticFiles();
 app.UseRouting();
-app.MapHtmxAntiforgeryScript();
 app.UseCors("htmxcorspolicy");
 app.UseSession();
-app.UseAntiforgery(); // Order matter
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();

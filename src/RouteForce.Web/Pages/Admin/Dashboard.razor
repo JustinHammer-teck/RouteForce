@@ -9,6 +9,11 @@
       <_NavBar></_NavBar>  
       <div id="admin-content"
            class="p-5">
+        <div hx-get="/orders?pageNumber=1&pageSize=10&sortBy=CreatedDate&sortDesc=true"
+             hx-swap="innerHTML"
+             hx-trigger="load"
+             hx-target="this"
+             ></div>
       </div>
       <_Footer/>
     </div>
@@ -19,7 +24,9 @@
         <ul class="menu w-full grow">
 
           <li>
-            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
+            <a href="/"
+               hx-boost="true"
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round"
                    stroke-width="2" fill="none" stroke="currentColor" class="inline-block size-4 my-1.5">
                 <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
@@ -27,7 +34,7 @@
                   d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               </svg>
               <span class="is-drawer-close:hidden">Homepage</span>
-            </button>
+            </a>
           </li>
 
           <li>
@@ -57,17 +64,15 @@
             </button>
           </li>
           <li>
-            <button type="button" 
-                    hx-get="/order"
-                    hx-swap="innerHTML"
-                    hx-target="#admin-content"
-                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                    data-tip="Create User">
+            <a  href="/users/logout"
+                hx-boost="true"
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                data-tip="Sign Out">
               <svg class="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
               </svg>
-              <span class="is-drawer-close:hidden">Create Order</span>
-            </button>
+              <span class="is-drawer-close:hidden">Sign Out</span>
+            </a>
           </li>
         </ul>
         <div class="m-2 is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Open">

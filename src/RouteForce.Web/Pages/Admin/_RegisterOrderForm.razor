@@ -1,0 +1,98 @@
+@using RouteForce.Application.Common.DTOs
+
+<form hx-post="/orders/register"
+      hx-target="#form-container"
+      hx-swap="outerHTML"
+      class="space-y-4">
+
+    <h3 class="text-xl font-semibold mb-4">Create New Order</h3>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Receiver</span>
+        </label>
+        <select name="PersonalReceiverId"
+                required
+                class="select select-bordered w-full">
+            <option value="">Select a receiver...</option>
+            @if (Receivers != null)
+            {
+                @foreach (var receiver in Receivers)
+                {
+                    <option value="@receiver.Id">@receiver.Name - @receiver.Email</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Product Reference ID</span>
+        </label>
+        <input type="text"
+               name="ProductReferenceId"
+               required
+               placeholder="SKU-12345"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Delivery Address</span>
+        </label>
+        <select name="SelectedDeliveryAddressId"
+                class="select select-bordered w-full">
+            <option value="">Select delivery address...</option>
+            @if (DeliveryAddresses != null)
+            {
+                @foreach (var address in DeliveryAddresses)
+                {
+                    <option value="@address.Id">
+                        @address.Label - @address.Address.AddressLine, @address.Address.City
+                    </option>
+                }
+            }
+        </select>
+        <label class="label">
+            <span class="label-text-alt">Select receiver first to see their saved addresses</span>
+        </label>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Estimated Delivery Date (Optional)</span>
+        </label>
+        <input type="date"
+               name="EstimatedDeliveryDate"
+               class="input input-bordered w-full" />
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Notes (Optional)</span>
+        </label>
+        <textarea name="Notes"
+                  placeholder="Special delivery instructions or order notes"
+                  class="textarea textarea-bordered w-full"
+                  rows="3"></textarea>
+    </div>
+
+    <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-outline">
+            Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+            Create Order
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+
+    <AntiforgeryToken/>
+</form>
+
+@code {
+    [Parameter] public List<Core.Models.PersonalReceiver>? Receivers { get; set; }
+    [Parameter] public List<Core.Models.DeliveryAddress>? DeliveryAddresses { get; set; }
+}

@@ -2,26 +2,27 @@
 @using RouteForce.Web.Pages.Shared
 @layout _Layout;
 
-<section class="w-full h-full flex flex-row justify-center">
+<section id="login-container" class="w-full h-full flex flex-row justify-center">
+    <span id="login-form-indr" class="htmx-indicator loading loading-spinner loading-xl"></span>
     <div class="card w-full max-w-md shadow-lg bg-base-100">
         <div class="card-body">
             <h2 class="text-2xl font-bold text-center mb-6">Log in to Your Account</h2>
-            <form class="space-y-5" 
+            <form class="space-y-5"
                   method="post"
-                  hx-post="/login"
-                  hx-history="false"
-                  :hx-vals="JSON.stringify(form)">
+                  hx-post="/users/login"
+                  hx-swap="outerHTML"
+                  hx-target="#login-container"
+                  hx-indicator="#login-form-indr">
                 <div>
                     <label class="label">
                         <span class="label-text">Email</span>
                     </label>
                     <input
                         type="email"
-                        name="email"
+                        name="UserName"
                         required
                         placeholder="you@example.com"
-                        class="input input-bordered w-full"
-                    />
+                        class="input input-bordered w-full"/>
                 </div>
                 <div>
                     <label class="label">
@@ -29,11 +30,10 @@
                     </label>
                     <input
                         type="password"
-                        name="password"
+                        name="Password"
                         required
                         placeholder="••••••••"
-                        class="input input-bordered w-full"
-                    />
+                        class="input input-bordered w-full"/>
                 </div>
                 <button type="submit" class="btn btn-primary w-full">Sign In</button>
                 <AntiforgeryToken/>

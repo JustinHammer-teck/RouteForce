@@ -34,9 +34,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Phone)
             .IsRequired()
             .HasMaxLength(50);
-        
-        builder.Property(u => u.BusinessId)
-            .HasMaxLength(200);
 
         builder.Property(u => u.CreatedDate)
             .IsRequired()

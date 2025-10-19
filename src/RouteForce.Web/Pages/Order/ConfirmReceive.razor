@@ -1,6 +1,113 @@
-@page "/ConfirmReceive"
-<h3>ConfirmReceive</h3>
+@page "/order/confirm-receive"
+@using RouteForce.Application.Common.Interfaces
+@using Microsoft.EntityFrameworkCore
+@inject IApplicationDbContext DbContext
+
+<div class="container mx-auto p-8 max-w-2xl">
+    @if (success)
+    {
+        <div class="alert alert-success mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Delivery confirmed successfully! Thank you.</span>
+        </div>
+    }
+    else if (order != null)
+    {
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">Confirm Delivery</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">Tracking Number</span>
+                        </label>
+                        <p class="text-lg">@order.TrackingNumber</p>
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">Product Reference</span>
+                        </label>
+                        <p class="text-lg">@order.ProductReferenceId</p>
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">Delivery Address</span>
+                        </label>
+                        <p>@order.DeliveryAddress.AddressLine</p>
+                        <p>@order.DeliveryAddress.City, @order.DeliveryAddress.State @order.DeliveryAddress.PostalCode</p>
+                        <p>@order.DeliveryAddress.Country</p>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <form 
+                        method="post" 
+                        hx-post="/webhooks/confirm-delivery">
+                        <input type="hidden" name="token" value="@token" />
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Confirm I Received This Package
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else if (error != null)
+    {
+        <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span>@error</span>
+        </div>
+    }
+</div>
 
 @code {
-    
+    [Parameter] public string? token { get; set; }
+    [Parameter] public bool success { get; set; }
+
+    private Core.Models.Order? order;
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (success)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(token))
+        {
+            error = "Invalid token. Please check your confirmation link.";
+            return;
+        }
+
+        var webhookToken = await DbContext.WebhookTokens
+            .AsNoTracking()
+            .Include(t => t.Order)
+            .FirstOrDefaultAsync(t => t.Token.Value == token);
+
+        if (webhookToken == null || !webhookToken.IsActive)
+        {
+            error = "Invalid or expired token. Please contact the sender.";
+            return;
+        }
+
+        if (webhookToken.UsedCount >= webhookToken.UsageLimit)
+        {
+            error = "This confirmation link has already been used.";
+            return;
+        }
+
+        order = webhookToken.Order;
+    }
 }

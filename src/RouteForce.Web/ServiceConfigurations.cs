@@ -12,7 +12,7 @@ public static class ServiceConfigurations
         services.AddHttpContextAccessor();
         services.AddSession(options => {
             options.Cookie.Name = ".register-user.form";
-            options.IdleTimeout = TimeSpan.FromMinutes(5);
+            options.IdleTimeout = TimeSpan.FromMinutes(30);
         });
         services.AddTransient<SessionManager>();    
         services.AddTransient<HtmxRequestContext>();
@@ -27,6 +27,7 @@ public static class ServiceConfigurations
             {
                 options.Cookie.Name = "AuthenticationCookie";
                 options.LoginPath = "/users/login";
+                options.LogoutPath = "/users/logout";
                 options.AccessDeniedPath = "/error/403?msg='Access denied'";
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.SlidingExpiration = true;

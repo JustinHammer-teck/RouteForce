@@ -11,7 +11,6 @@ public class Order
     public int PersonalReceiverId { get; set; }
     public PersonalReceiver PersonalReceiver { get; set; }
     public int? DeliveryServiceTemplateId { get; set; }
-    public DeliveryServiceTemplate DeliveryServiceTemplate { get; set; }
     public Address DeliveryAddress { get; set; }
     public int? SelectedDeliveryAddressId { get; set; }
     public DeliveryAddress SelectedDeliveryAddress { get; set; }
