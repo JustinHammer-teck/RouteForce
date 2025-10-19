@@ -11,8 +11,8 @@ using RouteForce.Infrastructure.Persistent;
 namespace RouteForce.Infrastructure.Persistent.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251018130822_ADDCHANGE")]
-    partial class ADDCHANGE
+    [Migration("20251019104451_ADDBUSINESS")]
+    partial class ADDBUSINESS
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

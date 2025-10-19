@@ -8,16 +8,15 @@
             <h2 class="text-2xl font-bold text-center mb-6">Log in to Your Account</h2>
             <form class="space-y-5" 
                   method="post"
-                  hx-post="/login"
-                  hx-history="false"
-                  :hx-vals="JSON.stringify(form)">
+                  hx-post="/users/login"
+                  >
                 <div>
                     <label class="label">
                         <span class="label-text">Email</span>
                     </label>
                     <input
                         type="email"
-                        name="email"
+                        name="inputUsername"
                         required
                         placeholder="you@example.com"
                         class="input input-bordered w-full"
@@ -29,7 +28,7 @@
                     </label>
                     <input
                         type="password"
-                        name="password"
+                        name="inputPassword"
                         required
                         placeholder="••••••••"
                         class="input input-bordered w-full"

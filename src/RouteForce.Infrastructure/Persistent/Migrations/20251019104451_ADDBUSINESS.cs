@@ -5,7 +5,7 @@
 namespace RouteForce.Infrastructure.Persistent.Migrations
 {
     /// <inheritdoc />
-    public partial class ADDCHANGE : Migration
+    public partial class ADDBUSINESS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
