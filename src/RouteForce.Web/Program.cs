@@ -1,4 +1,3 @@
-using Htmx.Net.Toast.Extensions;
 using Htmx.TagHelpers;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using RouteForce.Application;
 using RouteForce.Infrastructure;
 using RouteForce.Web;
 using RouteForce.Web.Configurations;
-using RouteForce.Web.Pages.Home;
 using RouteForce.Web.Pages.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,7 +51,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapEndpoints();
-app.UseNotyf();
 
 app.MapGet("/error/{http_error_code}", (
         [FromRoute] string http_error_code,
@@ -63,6 +60,8 @@ app.MapGet("/error/{http_error_code}", (
         StatusCodeParam = http_error_code, CustomMessage = msg
     }));
 
-app.MapGet("/", () => new RazorComponentResult<Home>());
+app.MapGet("/", () => 
+        Results.Redirect("/admin/dashboard")
+);
 
 app.Run();

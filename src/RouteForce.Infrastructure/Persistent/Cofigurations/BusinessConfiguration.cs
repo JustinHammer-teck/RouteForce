@@ -76,7 +76,7 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(b => b.Users)
-            .WithOne()
+            .WithOne(u => u.Business)
             .HasForeignKey(u => u.BusinessId)
             .OnDelete(DeleteBehavior.Restrict);
 

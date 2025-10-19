@@ -6,20 +6,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RouteForce.Infrastructure.Persistent.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Business",
+                name: "Businesses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    Phone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     AddressLine = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     City = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     State = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
@@ -33,7 +31,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Business", x => x.Id);
+                    table.PrimaryKey("PK_Businesses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,9 +69,34 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 {
                     table.PrimaryKey("PK_PersonalReceiver", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PersonalReceiver_Business_CreatedByBusinessId",
+                        name: "FK_PersonalReceiver_Businesses_CreatedByBusinessId",
                         column: x => x.CreatedByBusinessId,
-                        principalTable: "Business",
+                        principalTable: "Businesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", maxLength: 450, nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Password = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    UserRole = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    BusinessId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    Phone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Businesses_BusinessId",
+                        column: x => x.BusinessId,
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -107,9 +130,9 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 {
                     table.PrimaryKey("PK_Checkpoints", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Checkpoints_Business_ManagedByBusinessId",
+                        name: "FK_Checkpoints_Businesses_ManagedByBusinessId",
                         column: x => x.ManagedByBusinessId,
-                        principalTable: "Business",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -174,15 +197,16 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     EstimatedDeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ActualDeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false)
+                    Notes = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    ProductReferenceId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Order", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Order_Business_BusinessId",
+                        name: "FK_Order_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Business",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -314,14 +338,8 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Business_Email",
-                table: "Business",
-                column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Business_IsActive",
-                table: "Business",
+                name: "IX_Businesses_IsActive",
+                table: "Businesses",
                 column: "IsActive");
 
             migrationBuilder.CreateIndex(
@@ -462,6 +480,26 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_BusinessId",
+                table: "Users",
+                column: "BusinessId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Name",
+                table: "Users",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserRole",
+                table: "Users",
+                column: "UserRole");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WebhookTokens_ExpirationDate",
                 table: "WebhookTokens",
                 column: "ExpirationDate");
@@ -492,6 +530,9 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 name: "RouteCheckpoints");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "WebhookTokens");
 
             migrationBuilder.DropTable(
@@ -510,7 +551,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                 name: "PersonalReceiver");
 
             migrationBuilder.DropTable(
-                name: "Business");
+                name: "Businesses");
         }
     }
 }

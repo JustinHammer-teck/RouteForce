@@ -11,6 +11,9 @@ public interface IApplicationDbContext
     DbSet<Checkpoint> Checkpoints { get; }
     DbSet<User> Users { get; }
     DbSet<Business> Businesses { get; }
+    DbSet<PersonalReceiver> PersonalReceivers { get; }
+    DbSet<DeliveryAddress> DeliveryAddresses { get; }
+    DbSet<Order> Orders { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -11,8 +11,8 @@ using RouteForce.Infrastructure.Persistent;
 namespace RouteForce.Infrastructure.Persistent.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251016101828_AddUserApplication")]
-    partial class AddUserApplication
+    [Migration("20251019114349_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                     b.HasIndex("IsActive");
 
-                    b.ToTable("Business");
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.Checkpoint", b =>
@@ -294,6 +294,10 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                     b.Property<int>("PersonalReceiverId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ProductReferenceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("SelectedDeliveryAddressId")
                         .HasColumnType("INTEGER");
 
@@ -428,17 +432,13 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
             modelBuilder.Entity("RouteForce.Core.Models.User", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(450)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("BusinessId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("BusinessName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
@@ -448,6 +448,11 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
@@ -460,25 +465,20 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserType")
+                    b.Property<string>("UserRole")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("BusinessId");
 
                     b.HasIndex("Email");
 
-                    b.HasIndex("UserName");
+                    b.HasIndex("Name");
 
-                    b.HasIndex("UserType");
+                    b.HasIndex("UserRole");
 
                     b.ToTable("Users");
                 });
@@ -583,7 +583,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                             b1.HasKey("BusinessId");
 
-                            b1.ToTable("Business");
+                            b1.ToTable("Businesses");
 
                             b1.WithOwner()
                                 .HasForeignKey("BusinessId");
@@ -914,11 +914,13 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
             modelBuilder.Entity("RouteForce.Core.Models.User", b =>
                 {
-                    b.HasOne("RouteForce.Core.Models.Business", null)
+                    b.HasOne("RouteForce.Core.Models.Business", "Business")
                         .WithMany("Users")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Business");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.WebhookToken", b =>
