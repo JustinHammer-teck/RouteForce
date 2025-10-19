@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<RouteCheckpoint> RouteCheckpoints { get; }
     public DbSet<Checkpoint> Checkpoints { get; }
     public DbSet<User> Users { get; }
+    public DbSet<Business> Businesses { get; set;  }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
