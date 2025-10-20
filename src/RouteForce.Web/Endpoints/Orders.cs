@@ -109,35 +109,9 @@ public class Orders : EndpointGroupBase
         });
     }
 
-    private async Task<IResult> RegisterForm(
-        IApplicationDbContext context,
-        HttpContext httpContext)
+    private IResult RegisterForm()
     {
-        var businessIdClaim = httpContext.User.FindFirst("BusinessId");
-
-        if (businessIdClaim == null || !int.TryParse(businessIdClaim.Value, out var businessId))
-        {
-            return Results.Unauthorized();
-        }
-
-        var receivers = await context.PersonalReceivers
-            .AsNoTracking()
-            .Where(r => r.CreatedByBusinessId == businessId)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var receiverIds = receivers.Select(r => r.Id).ToList();
-        var addresses = await context.DeliveryAddresses
-            .AsNoTracking()
-            .Where(a => receiverIds.Contains(a.PersonalReceiverId))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        return new RazorComponentResult<_RegisterOrderForm>(new
-        {
-            Receivers = receivers,
-            DeliveryAddresses = addresses
-        });
+        return new RazorComponentResult<_RegisterOrderForm>();
     }
 
     private async Task<IResult> Register(

@@ -2,7 +2,7 @@
 
 default:
     just --list
-    
+
 run:
     dotnet run --project src/RouteForce.Web
     

@@ -25,8 +25,8 @@ public class OrderService : IOrderService
     public async Task CreateNewOrderAsync(CreateOrderRequest request, 
         int businessId,
         DeliveryAddress deliveryAddress,
-        Core.Models.Checkpoint deliveryCheckpoint,
-        Core.Models.Checkpoint warehouseCheckpoint
+        Checkpoint deliveryCheckpoint,
+        Checkpoint warehouseCheckpoint
         )
     {
         var trackingNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";

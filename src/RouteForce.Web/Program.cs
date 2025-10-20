@@ -20,22 +20,23 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler(exceptionHandlerApp =>
+    {
+        exceptionHandlerApp.Run(async context =>
+        {
+            var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+            var exception = exceptionHandlerPathFeature?.Error;
+            var errorMessage = exception?.Message ?? "An unexpected error occurred.";
+
+            context.Response.Redirect($"/error/500?msg={Uri.EscapeDataString(errorMessage)}");
+            await Task.CompletedTask;
+        });
+    });
 }
 else
 {
+    app.UseExceptionHandler("/error/500");
     app.UseHsts();
-
-    var distPath = Path.Combine(builder.Environment.ContentRootPath, "dist");
-    if (Directory.Exists(distPath))
-    {
-        var distProvider = new PhysicalFileProvider(distPath);
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = distProvider,
-            RequestPath = ""
-        });
-    }
 }
 
 app.UseHttpsRedirection();

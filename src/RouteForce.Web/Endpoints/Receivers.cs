@@ -95,9 +95,6 @@ public class Receivers : EndpointGroupBase
         await context.Checkpoints.AddAsync(checkpoint);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        return new RazorComponentResult<CreateOrder>(new
-        {
-            FormStep = 2
-        });
+        return new RazorComponentResult<_RegisterOrderForm>();
     }
 }

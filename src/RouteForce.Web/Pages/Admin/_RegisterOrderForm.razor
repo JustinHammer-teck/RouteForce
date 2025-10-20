@@ -1,8 +1,12 @@
 @using RouteForce.Application.Common.DTOs
+@using RouteForce.Application.Common.Interfaces
+@using Microsoft.EntityFrameworkCore
+@inject IApplicationDbContext DbContext
+@inject IHttpContextAccessor HttpContextAccessor
 
 <form hx-post="/orders/register"
       hx-target="#order-form-container"
-      hx-swap="outerHTML"
+      hx-swap="innerHTML"
       class="space-y-4">
 
     <h3 class="text-xl font-semibold mb-4">Create New Order</h3>
@@ -114,6 +118,34 @@
 </form>
 
 @code {
-    [Parameter] public List<Core.Models.PersonalReceiver>? Receivers { get; set; }
-    [Parameter] public List<Core.Models.DeliveryAddress>? DeliveryAddresses { get; set; }
+    private List<Core.Models.PersonalReceiver>? Receivers { get; set; }
+    private List<Core.Models.DeliveryAddress>? DeliveryAddresses { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext == null)
+        {
+            return;
+        }
+
+        var businessIdClaim = httpContext.User.FindFirst("BusinessId");
+        if (businessIdClaim == null || !int.TryParse(businessIdClaim.Value, out var businessId))
+        {
+            return;
+        }
+
+        Receivers = await DbContext.PersonalReceivers
+            .AsNoTracking()
+            .Where(r => r.CreatedByBusinessId == businessId)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var receiverIds = Receivers.Select(r => r.Id).ToList();
+        DeliveryAddresses = await DbContext.DeliveryAddresses
+            .AsNoTracking()
+            .Where(a => receiverIds.Contains(a.PersonalReceiverId))
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
 }
