@@ -11,8 +11,8 @@ using RouteForce.Infrastructure.Persistent;
 namespace RouteForce.Infrastructure.Persistent.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251016141339_UpdateNewChange")]
-    partial class UpdateNewChange
+    [Migration("20251019133953_UpdateWebhookToken")]
+    partial class UpdateWebhookToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                     b.HasIndex("IsActive");
 
-                    b.ToTable("Business");
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.Checkpoint", b =>
@@ -150,7 +150,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                     b.HasIndex("PersonalReceiverId", "IsDefault");
 
-                    b.ToTable("DeliveryAddress");
+                    b.ToTable("DeliveryAddresses");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.DeliveryServiceTemplate", b =>
@@ -294,6 +294,10 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                     b.Property<int>("PersonalReceiverId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ProductReferenceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("SelectedDeliveryAddressId")
                         .HasColumnType("INTEGER");
 
@@ -326,7 +330,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                     b.HasIndex("BusinessId", "Status");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.PersonalReceiver", b =>
@@ -369,7 +373,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                     b.HasIndex("Email");
 
-                    b.ToTable("PersonalReceiver");
+                    b.ToTable("PersonalReceivers");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.RouteCheckpoint", b =>
@@ -428,17 +432,13 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
             modelBuilder.Entity("RouteForce.Core.Models.User", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(450)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("BusinessId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("BusinessName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
@@ -448,6 +448,11 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
@@ -460,23 +465,18 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("UserRole")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("BusinessId");
 
                     b.HasIndex("Email");
 
-                    b.HasIndex("UserName");
+                    b.HasIndex("Name");
 
                     b.HasIndex("UserRole");
 
@@ -502,8 +502,11 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(true);
 
-                    b.Property<int?>("IssuedToPersonalReceiverId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("IssueType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("IssueType");
 
                     b.Property<DateTime?>("LastUsedDate")
                         .HasColumnType("TEXT");
@@ -527,7 +530,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                     b.HasIndex("IsActive");
 
-                    b.HasIndex("IssuedToPersonalReceiverId");
+                    b.HasIndex("IssueType");
 
                     b.HasIndex("OrderId");
 
@@ -583,7 +586,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                             b1.HasKey("BusinessId");
 
-                            b1.ToTable("Business");
+                            b1.ToTable("Businesses");
 
                             b1.WithOwner()
                                 .HasForeignKey("BusinessId");
@@ -755,7 +758,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                             b1.HasKey("DeliveryAddressId");
 
-                            b1.ToTable("DeliveryAddress");
+                            b1.ToTable("DeliveryAddresses");
 
                             b1.WithOwner()
                                 .HasForeignKey("DeliveryAddressId");
@@ -855,7 +858,7 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Order");
+                            b1.ToTable("Orders");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -914,20 +917,17 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
 
             modelBuilder.Entity("RouteForce.Core.Models.User", b =>
                 {
-                    b.HasOne("RouteForce.Core.Models.Business", null)
+                    b.HasOne("RouteForce.Core.Models.Business", "Business")
                         .WithMany("Users")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Business");
                 });
 
             modelBuilder.Entity("RouteForce.Core.Models.WebhookToken", b =>
                 {
-                    b.HasOne("RouteForce.Core.Models.PersonalReceiver", "IssuedToPersonalReceiver")
-                        .WithMany()
-                        .HasForeignKey("IssuedToPersonalReceiverId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("RouteForce.Core.Models.Order", "Order")
                         .WithMany("WebhookTokens")
                         .HasForeignKey("OrderId")
@@ -964,8 +964,6 @@ namespace RouteForce.Infrastructure.Persistent.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("WebhookTokenId");
                         });
-
-                    b.Navigation("IssuedToPersonalReceiver");
 
                     b.Navigation("Order");
 

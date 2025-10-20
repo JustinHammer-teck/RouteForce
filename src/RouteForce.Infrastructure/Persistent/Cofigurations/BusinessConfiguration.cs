@@ -10,6 +10,10 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
     {
         builder.HasKey(b => b.Id);
 
+        builder.Property(b => b.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+
         builder.Property(b => b.Name)
             .IsRequired()
             .HasMaxLength(200);
@@ -72,7 +76,7 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(b => b.Users)
-            .WithOne()
+            .WithOne(u => u.Business)
             .HasForeignKey(u => u.BusinessId)
             .OnDelete(DeleteBehavior.Restrict);
 

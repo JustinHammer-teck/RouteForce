@@ -9,12 +9,12 @@ public class SessionManager
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public void SetFlash(string key, string value)
+    public void SetSessionValue(string key, string value)
     {
         _httpContextAccessor.HttpContext?.Session.SetString(key, value);
     }
 
-    public string? GetFlash(string key)
+    public string? GetSessionValue(string key)
     {
         if (_httpContextAccessor.HttpContext == null) return "";
 

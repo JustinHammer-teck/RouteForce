@@ -8,13 +8,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(u => u.UserId);
+        builder.HasKey(u => u.Id);
 
-        builder.Property(u => u.UserId)
-            .IsRequired()
+        builder.Property(u => u.Id)
+            .ValueGeneratedOnAdd()
             .HasMaxLength(450);
 
-        builder.Property(u => u.UserName)
+        builder.Property(u => u.Name)
             .IsRequired()
             .HasMaxLength(200);
 
@@ -35,14 +35,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(u => u.BusinessName)
-            .HasMaxLength(200);
-
         builder.Property(u => u.CreatedDate)
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.HasIndex(u => u.UserName);
+        builder.HasIndex(u => u.Name);
         builder.HasIndex(u => u.Email);
         builder.HasIndex(u => u.UserRole);
     }

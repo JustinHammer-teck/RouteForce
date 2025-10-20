@@ -72,11 +72,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(o => o.PersonalReceiverId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(o => o.DeliveryServiceTemplate)
-            .WithMany(dst => dst.Orders)
-            .HasForeignKey(o => o.DeliveryServiceTemplateId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         builder.HasOne(o => o.SelectedDeliveryAddress)
             .WithMany()
             .HasForeignKey(o => o.SelectedDeliveryAddressId)
@@ -90,11 +85,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasMany(o => o.RouteCheckpoints)
             .WithOne(rc => rc.Order)
             .HasForeignKey(rc => rc.OrderId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(o => o.Notifications)
-            .WithOne(n => n.Order)
-            .HasForeignKey(n => n.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(o => o.WebhookTokens)

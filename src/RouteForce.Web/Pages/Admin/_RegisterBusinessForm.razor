@@ -1,0 +1,56 @@
+@using RouteForce.Application.Common.DTOs
+@using RouteForce.Web.Sessions
+<form hx-post="/users/register/business"
+      hx-target="#form-container"
+      hx-swap="innerHTML"
+      class="space-y-4">
+
+    <h3 class="text-xl font-semibold mb-4">Business Information</h3>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Business Name</span>
+        </label>
+        <input type="text"
+               name="Name"
+               required
+               value="@(SavedRequest?.Name ?? "")"
+               placeholder="My Company LLC"
+               class="input input-bordered w-full" />
+    </div>
+
+   <_AddressSuggestion
+        AddressLine="@SavedRequest?.AddressLine"
+        City="@SavedRequest?.City"
+        State="@SavedRequest?.State"
+        PostalCode="@SavedRequest?.PostalCode"
+        Country="@SavedRequest?.Country"
+        Latitude="@SavedRequest?.Latitude"
+        Longitude="@SavedRequest?.Longitude" /> 
+
+    <div>
+        <label class="label">
+            <span class="label-text">Notes (Optional)</span>
+        </label>
+        <textarea name="Notes"
+                  placeholder="Additional information about your business"
+                  class="textarea textarea-bordered w-full"
+                  rows="3">@(SavedRequest?.Notes ?? "")</textarea>
+    </div>
+
+    <div class="flex justify-end">
+        <button type="submit" class="btn btn-primary">
+            Next: User Details
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+        </button>
+    </div>
+
+    <AntiforgeryToken/>
+</form>
+
+@code {
+    [Parameter] public SessionManager Session { get; set; }
+    [Parameter] public CreateBusinessRequest? SavedRequest { get; set; }
+}

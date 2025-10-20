@@ -27,7 +27,6 @@ public class Checkpoint
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public string Notes { get; set; } = string.Empty;
-    public DeliveryServiceTemplate DeliveryServiceTemplate { get; set; }
     public Business ManagedByBusiness { get; set; }
     public ICollection<RouteCheckpoint> RouteCheckpoints { get; set; } = new List<RouteCheckpoint>();
 }

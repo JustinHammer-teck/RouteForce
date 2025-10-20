@@ -1,4 +1,3 @@
-using Htmx.Net.Toast.Extensions;
 using Htmx.TagHelpers;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using RouteForce.Application;
 using RouteForce.Infrastructure;
 using RouteForce.Web;
 using RouteForce.Web.Configurations;
-using RouteForce.Web.Pages.Home;
 using RouteForce.Web.Pages.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,32 +20,32 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler(exceptionHandlerApp =>
+    {
+        exceptionHandlerApp.Run(async context =>
+        {
+            var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+            var exception = exceptionHandlerPathFeature?.Error;
+            var errorMessage = exception?.Message ?? "An unexpected error occurred.";
+
+            context.Response.Redirect($"/error/500?msg={Uri.EscapeDataString(errorMessage)}");
+            await Task.CompletedTask;
+        });
+    });
 }
 else
 {
+    app.UseExceptionHandler("/error/500");
     app.UseHsts();
-
-    var distPath = Path.Combine(builder.Environment.ContentRootPath, "dist");
-    if (Directory.Exists(distPath))
-    {
-        var distProvider = new PhysicalFileProvider(distPath);
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = distProvider,
-            RequestPath = ""
-        });
-    }
 }
 
 app.UseHttpsRedirection();
 app.UseStatusCodePagesWithReExecute("/error/{0}");
-app.UseCors("htmxcorspolicy");
-app.MapHtmxAntiforgeryScript();
-app.UseNotyf();
-app.UseAntiforgery();
+
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCors("htmxcorspolicy");
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
@@ -61,6 +59,8 @@ app.MapGet("/error/{http_error_code}", (
         StatusCodeParam = http_error_code, CustomMessage = msg
     }));
 
-app.MapGet("/", () => new RazorComponentResult<Home>());
+app.MapGet("/", () => 
+        Results.Redirect("/admin/dashboard")
+);
 
 app.Run();

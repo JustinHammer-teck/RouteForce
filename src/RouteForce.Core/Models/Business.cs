@@ -8,6 +8,7 @@ public class Business
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public string Notes { get; set; } = string.Empty;
+    
     public ICollection<Checkpoint> Warehouses { get; set; } = new List<Checkpoint>();
     public ICollection<Order> Orders { get; set; } = new List<Order>();
     public ICollection<User> Users { get; set; } = new List<User>();

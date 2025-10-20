@@ -1,0 +1,190 @@
+@using FluentValidation.Results
+<div class="grid grid-cols-2 gap-4">
+    <div class="col-span-2">
+        <label class="label">
+            <span class="label-text">Address Line</span>
+        </label>
+        <input type="text"
+               id="address-autocomplete"
+               name="AddressLine"
+               required
+               value="@(AddressLine ?? "")"
+               placeholder="Start typing address..."
+               class="input input-bordered w-full"/>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">City</span>
+        </label>
+        <input type="text"
+               id="city"
+               name="City"
+               required
+               value="@(City ?? "")"
+               placeholder="New York"
+               class="input input-bordered w-full"/>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">State</span>
+        </label>
+        <input type="text"
+               id="state"
+               name="State"
+               required
+               value="@(State ?? "")"
+               placeholder="NY"
+               class="input input-bordered w-full"/>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Postal Code</span>
+        </label>
+        <input type="text"
+               id="postal-code"
+               name="PostalCode"
+               required
+               value="@(PostalCode ?? "")"
+               placeholder="10001"
+               class="input input-bordered w-full"/>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Country</span>
+        </label>
+        <input type="text"
+               id="country"
+               name="Country"
+               required
+               value="@(Country ?? "")"
+               placeholder="USA"
+               class="input input-bordered w-full"/>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+    <div>
+        <label class="label">
+            <span class="label-text">Latitude (Optional)</span>
+        </label>
+        <input type="number"
+               id="latitude"
+               name="Latitude"
+               step="0.000001"
+               value="@(Latitude?.ToString() ?? "")"
+               placeholder="40.712776"
+               class="input input-bordered w-full"
+               readonly/>
+    </div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Longitude (Optional)</span>
+        </label>
+        <input type="number"
+               id="longitude"
+               name="Longitude"
+               step="0.000001"
+               value="@(Longitude?.ToString() ?? "")"
+               placeholder="-74.005974"
+               class="input input-bordered w-full"
+               readonly/>
+    </div>
+</div>
+
+
+<script>
+    (async function () {
+        async function initAutocomplete() {
+            const input = document.getElementById('address-autocomplete');
+            if (!input) return;
+
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['address'],
+                fields: ['address_components', 'geometry', 'formatted_address'],
+                componentRestrictions: {country: 'AU'},
+                bounds: {
+                    north: -33.5781,
+                    south: -34.1183,
+                    east: 151.3430,
+                    west: 150.5209
+                },
+                strictBounds: false
+            });
+
+            autocomplete.addListener('place_changed', await function () {
+                const place = autocomplete.getPlace();
+
+                if (!place.address_components) {
+                    console.log('No details available for input: ' + place.name);
+                    return;
+                }
+
+                document.getElementById('city').value = '';
+                document.getElementById('state').value = '';
+                document.getElementById('postal-code').value = '';
+                document.getElementById('country').value = '';
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+
+                let streetNumber = '';
+                let route = '';
+
+                place.address_components.forEach(component => {
+                    const types = component.types;
+
+                    if (types.includes('street_number')) {
+                        streetNumber = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        route = component.long_name;
+                    }
+                    if (types.includes('locality')) {
+                        document.getElementById('city').value = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        document.getElementById('state').value = component.short_name;
+                    }
+                    if (types.includes('postal_code')) {
+                        document.getElementById('postal-code').value = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        document.getElementById('country').value = component.long_name;
+                    }
+                });
+
+                const addressLine = `${streetNumber} ${route}`.trim();
+                if (addressLine) {
+                    document.getElementById('address-autocomplete').value = addressLine;
+                }
+
+                if (place.geometry && place.geometry.location) {
+                    document.getElementById('latitude').value = place.geometry.location.lat();
+                    document.getElementById('longitude').value = place.geometry.location.lng();
+                }
+            });
+        }
+
+        async function waitForGoogleMaps() {
+            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                await initAutocomplete();
+            }
+        }
+
+        await waitForGoogleMaps();
+    })();
+</script>
+
+@code {
+    [Parameter] public string? AddressLine { get; set; }
+    [Parameter] public string? City { get; set; }
+    [Parameter] public string? State { get; set; }
+    [Parameter] public string? PostalCode { get; set; }
+    [Parameter] public string? Country { get; set; }
+    [Parameter] public decimal? Latitude { get; set; }
+    [Parameter] public decimal? Longitude { get; set; }
+}

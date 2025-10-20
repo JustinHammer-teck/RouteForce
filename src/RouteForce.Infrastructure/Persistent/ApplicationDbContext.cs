@@ -11,11 +11,14 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
     }
 
-    public DbSet<WebhookToken> WebhookTokens { get; }
-    public DbSet<Notification> Notifications { get; }
-    public DbSet<RouteCheckpoint> RouteCheckpoints { get; }
-    public DbSet<Checkpoint> Checkpoints { get; }
-    public DbSet<User> Users { get; }
+    public DbSet<WebhookToken> WebhookTokens { get; set; }
+    public DbSet<RouteCheckpoint> RouteCheckpoints { get; set; }
+    public DbSet<Checkpoint> Checkpoints { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Business> Businesses { get; set; }
+    public DbSet<PersonalReceiver> PersonalReceivers { get; set; }
+    public DbSet<DeliveryAddress> DeliveryAddresses { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

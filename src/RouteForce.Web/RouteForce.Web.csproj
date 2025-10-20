@@ -7,12 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="wwwroot\assets\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Htmx" Version="1.9.0" />
-        <PackageReference Include="Htmx.Net.Toast" Version="1.1.1" />
         <PackageReference Include="Htmx.TagHelpers" Version="1.9.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
           <PrivateAssets>all</PrivateAssets>
@@ -30,6 +25,10 @@
     <ItemGroup>
         <ProjectReference Include="..\RouteForce.Application\RouteForce.Application.csproj" />
         <ProjectReference Include="..\RouteForce.Infrastructure\RouteForce.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Business\CreateNewOrder.razor" />
     </ItemGroup>
 
 </Project>

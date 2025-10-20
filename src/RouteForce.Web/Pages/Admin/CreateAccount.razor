@@ -1,0 +1,39 @@
+@page "/CreateAccount"
+@using RouteForce.Web.Pages.Shared
+@using RouteForce.Web.Sessions
+@layout _Layout;
+
+<section class="w-full h-full flex flex-row justify-center py-8">
+    <div class="card w-full max-w-2xl shadow-lg bg-base-100">
+        <div class="card-body">
+            <h2 class="text-2xl font-bold text-center mb-6">Create New Account</h2>
+
+            <ul class="steps w-full mb-8">
+                <li class="step step-primary" id="step-indicator-1">Business Info</li>
+                <li class="step" id="step-indicator-2">User Details</li>
+            </ul>
+
+            <div id="form-container">
+                @if (FormStep == 1)
+                {   
+                    <div hx-get="/users/register/business"
+                         hx-swap="innerHTML"
+                         hx-trigger="load">
+                    </div>
+                }
+                else
+                {
+                    <div hx-get="/users/register/user"
+                         hx-swap="innerHTML"
+                         hx-trigger="load">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public SessionManager Session { get; set; }
+    [Parameter] public int FormStep { get; set; }
+}

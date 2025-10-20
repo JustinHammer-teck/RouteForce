@@ -93,11 +93,6 @@ public class CheckpointsConfiguration : IEntityTypeConfiguration<Checkpoint>
             .HasForeignKey(c => c.ManagedByBusinessId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(c => c.DeliveryServiceTemplate)
-            .WithMany(dst => dst.ServiceCheckpoints)
-            .HasForeignKey(c => c.DeliveryServiceTemplateId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         builder.HasMany(c => c.RouteCheckpoints)
             .WithOne(rc => rc.Checkpoint)
             .HasForeignKey(rc => rc.CheckpointId)
