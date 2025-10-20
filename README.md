@@ -49,6 +49,17 @@ is the main enabler for simple tech tack of Minimal API and HTMX
 ```sh
 # Create DB with migrations
 dotnet ef database update --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web
+# OR 
+just migrate-update
+
+# Build frontend packages
+cd src/RouteForce.Web/wwwroot
+
+# Install necessary packages
+pnpm install 
+
+# Compile to single main.js and main.css
+pnpm run build
 
 # Start
 dotnet run --environment Production --project src/RouteForce.Web
