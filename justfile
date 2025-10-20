@@ -6,12 +6,9 @@ default:
 run:
     dotnet run --project src/RouteForce.Web
     
-init:
-    dotnet run --project src/RouteForce.Web -- init
+prod:
+    dotnet run --environment Production --project src/RouteForce.Web 
     
-help:
-    dotnet run --project src/RouteForce.Web -- help
-
 migrate-list:
     dotnet ef migrations list --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web
 
@@ -26,3 +23,4 @@ migrate-update:
   
 migrate-bundle: 
     dotnet ef migrations bundle --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web --output-dir Persistent/Migrations
+    

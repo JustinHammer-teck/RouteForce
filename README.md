@@ -47,13 +47,11 @@ is the main enabler for simple tech tack of Minimal API and HTMX
 ## How to Start 
 
 ```sh
-cd src/RouteForce.Web/wwwroot/
+# Create DB with migrations
+dotnet ef database update --project src/RouteForce.Infrastructure --startup-project src/RouteForce.Web
 
-npm install
-
-npm run dev
-
-dotnet run --project src/RouteForce.Web
+# Start
+dotnet run --environment Production --project src/RouteForce.Web
 OR
-just run
+just prod
 ```
