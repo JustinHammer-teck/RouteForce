@@ -21,4 +21,8 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\RouteForce.Core\RouteForce.Core.csproj" />
+    </ItemGroup>
+
 </Project>
