@@ -83,13 +83,16 @@ public class Users : EndpointGroupBase
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
         
-        return Results.Redirect("/");
+        httpContext.Response.Htmx(x => x.Redirect("/"));
+        return Results.Ok();
     }
 
     private async Task<IResult> Logout(HttpContext httpContext)
     {
         await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Results.Redirect("/");
+        
+        httpContext.Response.Htmx(x => x.Redirect("/"));
+        return Results.Ok();
     }
 
     private async Task<RazorComponentResult> RegisterPage(
@@ -142,6 +145,7 @@ public class Users : EndpointGroupBase
     private async Task<IResult> RegisterUser(
         [FromForm] CreateUserRequest userRequest,
         SessionManager sessionManager,
+        HttpContext httpContext,
         IApplicationDbContext context)
     {
         if (!sessionManager.HasKey("CreateBusinessRequest"))
@@ -208,6 +212,7 @@ public class Users : EndpointGroupBase
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        return Results.Redirect("/");
+        httpContext.Response.Htmx(x => x.Redirect("/"));
+        return Results.Ok();
     }
 }

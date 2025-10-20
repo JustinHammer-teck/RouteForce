@@ -1,28 +1,26 @@
-@* Simple Pagination Component *@
-
 <div class="flex justify-between items-center mt-6">
     <div class="text-sm opacity-70">
         Showing @TotalCount @ItemName
     </div>
+    <div class="join">
+        <a hx-get="@GetPageUrl(CurrentPage - 1)"
+           hx-swap="outerHTML"
+           hx-target="#order-list-container"
+           class="join-item btn btn-sm @(CurrentPage <= 1 ? "btn-disabled" : "")">
+            Previous
+        </a>
 
-    @if (TotalPages > 1)
-    {
-        <div class="join">
-            <a href="@GetPageUrl(CurrentPage - 1)"
-               class="join-item btn btn-sm @(CurrentPage <= 1 ? "btn-disabled" : "")">
-                Previous
-            </a>
+        <button class="join-item btn btn-sm btn-active">
+            Page @CurrentPage of @TotalPages
+        </button>
 
-            <button class="join-item btn btn-sm btn-active">
-                Page @CurrentPage of @TotalPages
-            </button>
-
-            <a href="@GetPageUrl(CurrentPage + 1)"
-               class="join-item btn btn-sm @(CurrentPage >= TotalPages ? "btn-disabled" : "")">
-                Next
-            </a>
-        </div>
-    }
+        <a hx-get="@GetPageUrl(CurrentPage + 1)"
+           hx-swap="outerHTML"
+           hx-target="#order-list-container"
+           class="join-item btn btn-sm @(CurrentPage >= TotalPages ? "btn-disabled" : "")">
+            Next
+        </a>
+    </div>
 </div>
 
 @code {
@@ -36,6 +34,6 @@
     {
         if (page < 1) page = 1;
         if (page > TotalPages) page = TotalPages;
-        return $"?pageNumber={page}&pageSize={PageSize}";
+        return $"/orders?pageNumber={page}&pageSize={PageSize}";
     }
 }

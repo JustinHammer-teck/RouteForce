@@ -1,7 +1,7 @@
 @using RouteForce.Application.Common.DTOs
 
 <form hx-post="/orders/register"
-      hx-target="#form-container"
+      hx-target="#order-form-container"
       hx-swap="outerHTML"
       class="space-y-4">
 
@@ -58,6 +58,30 @@
         </label>
     </div>
 
+    <div class="divider">Intermediate Checkpoint (Optional)</div>
+
+    <div>
+        <label class="label">
+            <span class="label-text">Checkpoint Name</span>
+        </label>
+        <input type="text"
+               name="IntermediateCheckpointName"
+               placeholder="e.g., Transit Hub - Downtown"
+               class="input input-bordered w-full" />
+        <label class="label">
+            <span class="label-text-alt">Enter a name to add an intermediate stop between warehouse and delivery</span>
+        </label>
+    </div>
+
+    <_AddressSuggestion
+        AddressLine=""
+        City=""
+        State=""
+        PostalCode=""
+        Country=""
+        Latitude="null"
+        Longitude="null" />
+
     <div>
         <label class="label">
             <span class="label-text">Estimated Delivery Date (Optional)</span>
@@ -78,9 +102,6 @@
     </div>
 
     <div class="flex justify-end gap-2">
-        <button type="button" class="btn btn-outline">
-            Cancel
-        </button>
         <button type="submit" class="btn btn-primary">
             Create Order
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">

@@ -12,7 +12,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     }
 
     public DbSet<WebhookToken> WebhookTokens { get; set; }
-    public DbSet<Notification> Notifications { get; set; }
     public DbSet<RouteCheckpoint> RouteCheckpoints { get; set; }
     public DbSet<Checkpoint> Checkpoints { get; set; }
     public DbSet<User> Users { get; set; }

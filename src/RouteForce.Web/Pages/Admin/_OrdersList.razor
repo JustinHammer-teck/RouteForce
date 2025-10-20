@@ -2,7 +2,7 @@
 @using RouteForce.Core.Enums
 @using RouteForce.Web.Pages.Components
 
-<div class="container mx-auto p-4 max-w-7xl">
+<div id="order-list-container" class="container mx-auto p-4 max-w-7xl">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Orders</h1>
         <button type="button"
@@ -19,7 +19,7 @@
 
     @if (Orders.Any())
     {
-        <div class="card bg-base-100 shadow-md">
+        <div id="order-list" class="card bg-base-100 shadow-md">
             <div class="overflow-x-auto">
                 <table class="table table-zebra">
                     <thead>
@@ -32,6 +32,7 @@
                             <th>Progress</th>
                             <th>Created</th>
                             <th>Est. Delivery</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,6 +77,19 @@
                                     else
                                     {
                                         <span class="text-sm opacity-50">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(order.DeliveryToken))
+                                    {
+                                        <a href="/orders/update-checkpoint?token=@order.DeliveryToken"
+                                           hx-boost="true"
+                                           class="btn btn-sm btn-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Update
+                                        </a>
                                     }
                                 </td>
                             </tr>

@@ -1,10 +1,12 @@
 @page "/order/confirm-receive"
 @using RouteForce.Application.Common.Interfaces
 @using Microsoft.EntityFrameworkCore
+@using RouteForce.Web.Pages.Shared
 @inject IApplicationDbContext DbContext
+@layout _Layout
 
 <div class="container mx-auto p-8 max-w-2xl">
-    @if (success)
+    @if (Success)
     {
         <div class="alert alert-success mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -47,8 +49,8 @@
 
                     <form 
                         method="post" 
-                        hx-post="/webhooks/confirm-delivery">
-                        <input type="hidden" name="token" value="@token" />
+                        hx-post="/webhooks/confirm-receive">
+                        <input type="hidden" name="token" value="@Token" />
                         <button type="submit" class="btn btn-primary btn-block">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -72,20 +74,20 @@
 </div>
 
 @code {
-    [Parameter] public string? token { get; set; }
-    [Parameter] public bool success { get; set; }
+    [Parameter] public string? Token { get; set; }
+    [Parameter] public bool Success { get; set; }
 
     private Core.Models.Order? order;
     private string? error;
 
     protected override async Task OnInitializedAsync()
     {
-        if (success)
+        if (Success)
         {
             return;
         }
 
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(Token))
         {
             error = "Invalid token. Please check your confirmation link.";
             return;
@@ -94,7 +96,7 @@
         var webhookToken = await DbContext.WebhookTokens
             .AsNoTracking()
             .Include(t => t.Order)
-            .FirstOrDefaultAsync(t => t.Token.Value == token);
+            .FirstOrDefaultAsync(t => t.Token.Value == Token);
 
         if (webhookToken == null || !webhookToken.IsActive)
         {

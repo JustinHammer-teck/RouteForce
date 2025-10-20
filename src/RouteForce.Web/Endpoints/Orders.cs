@@ -1,12 +1,16 @@
+using Htmx;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RouteForce.Application.Common.DTOs;
 using RouteForce.Application.Common.Interfaces;
+using RouteForce.Application.Service.Order;
+using RouteForce.Application.Service.WebhookToken;
 using RouteForce.Core.Enums;
 using RouteForce.Core.Models;
 using RouteForce.Web.Configurations;
 using RouteForce.Web.Pages.Admin;
+using RouteForce.Web.Pages.Order;
 
 namespace RouteForce.Web.Endpoints;
 
@@ -19,6 +23,8 @@ public class Orders : EndpointGroupBase
         groupBuilder.MapGet("register/form", CreatePage);
         groupBuilder.MapGet("register", RegisterForm);
         groupBuilder.MapPost("register", Register).DisableAntiforgery();
+        groupBuilder.MapGet("confirm-receive", ConfirmReceive).AllowAnonymous();
+        groupBuilder.MapGet("update-checkpoint", UpdateCheckpoint).AllowAnonymous();
     }
 
     private async Task<IResult> GetOrders(
@@ -41,6 +47,7 @@ public class Orders : EndpointGroupBase
             .Include(o => o.PersonalReceiver)
             .Include(o => o.RouteCheckpoints)
                 .ThenInclude(rc => rc.Checkpoint)
+            .Include(o => o.WebhookTokens)
             .Where(o => o.BusinessId == businessId);
         
         var totalCount = await query.CountAsync();
@@ -59,6 +66,10 @@ public class Orders : EndpointGroupBase
                 .OrderBy(rc => rc.SequenceNumber)
                 .FirstOrDefault(rc => rc.Status == RouteCheckPointStatus.Pending);
 
+            var deliveryToken = o.WebhookTokens
+                .FirstOrDefault(t => t.Token.Type == TokenType.DeliveryConfirmation && t.IsActive)
+                ?.Token.Value;
+
             return new OrderListItemDto
             {
                 Id = o.Id,
@@ -73,7 +84,8 @@ public class Orders : EndpointGroupBase
                 ActualDeliveryDate = o.ActualDeliveryDate,
                 CurrentCheckpoint = currentCheckpoint?.Checkpoint.Name,
                 CompletedCheckpoints = completedCheckpoints,
-                TotalCheckpoints = totalCheckpoints
+                TotalCheckpoints = totalCheckpoints,
+                DeliveryToken = deliveryToken
             };
         }).ToList();
 
@@ -131,7 +143,10 @@ public class Orders : EndpointGroupBase
     private async Task<IResult> Register(
         [FromForm] CreateOrderRequest request,
         IApplicationDbContext context,
-        HttpContext httpContext)
+        HttpContext httpContext,
+        IWebhookService webhookService,
+        IOrderService orderService
+        )
     {
         var businessIdClaim = httpContext.User.FindFirst("BusinessId");
 
@@ -174,18 +189,16 @@ public class Orders : EndpointGroupBase
             }
         }
 
-        var checkpoint = await context.Checkpoints
+        var deliveryCheckpoint = await context.Checkpoints
             .FirstOrDefaultAsync(c =>
                 c.CheckpointType == CheckpointType.DeliveryAddress &&
                 c.ManagedByBusinessId == businessId &&
                 c.Address.AddressLine == deliveryAddress.Address.AddressLine);
 
-        if (checkpoint == null)
+        if (deliveryCheckpoint == null)
         {
             return Results.BadRequest("Delivery checkpoint not found");
         }
-
-        var trackingNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
 
         var warehouseCheckpoint = await context.Checkpoints
             .FirstOrDefaultAsync(c =>
@@ -198,74 +211,32 @@ public class Orders : EndpointGroupBase
             return Results.BadRequest("No active warehouse found. Please set up a warehouse checkpoint first.");
         }
 
-        var order = new Order
-        {
-            TrackingNumber = trackingNumber,
-            BusinessId = businessId,
-            PersonalReceiverId = request.PersonalReceiverId,
-            SelectedDeliveryAddressId = deliveryAddress.Id,
-            DeliveryAddress = deliveryAddress.Address,
-            DeliveryCheckpointId = checkpoint.Id,
-            ProductReferenceId = request.ProductReferenceId,
-            Status = OrderStatus.Created,
-            EstimatedDeliveryDate = request.EstimatedDeliveryDate,
-            Notes = request.Notes ?? string.Empty,
-            CreatedDate = DateTime.UtcNow
-        };
+        await orderService.CreateNewOrderAsync(
+            request, 
+            businessId, 
+            deliveryAddress, 
+            deliveryCheckpoint, 
+            warehouseCheckpoint);
 
-        await context.Orders.AddAsync(order);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var startCheckpoint = new RouteCheckpoint
-        {
-            OrderId = order.Id,
-            CheckpointId = warehouseCheckpoint.Id,
-            SequenceNumber = 1,
-            Status = RouteCheckPointStatus.Pending,
-            ExpectedArrival = DateTime.UtcNow,
-            Notes = "Order pickup from warehouse"
-        };
-
-        var endCheckpoint = new RouteCheckpoint
-        {
-            OrderId = order.Id,
-            CheckpointId = checkpoint.Id,
-            SequenceNumber = 2,
-            Status = RouteCheckPointStatus.Pending,
-            ExpectedArrival = request.EstimatedDeliveryDate ?? DateTime.UtcNow.AddDays(3),
-            Notes = "Final delivery to receiver"
-        };
-
-        await context.RouteCheckpoints.AddAsync(startCheckpoint);
-        await context.RouteCheckpoints.AddAsync(endCheckpoint);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var deliveryToken = new WebhookToken
-        {
-            Token = Token.Create(TokenType.DeliveryConfirmation, IssuedToType.Business),
-            OrderId = order.Id,
-            ExpirationDate = DateTime.UtcNow.AddDays(30),
-            IsActive = true,
-            UsageLimit = 999,
-            UsedCount = 0,
-            CreatedDate = DateTime.UtcNow
-        };
-
-        var receiverToken = new WebhookToken
-        {
-            Token = Token.Create(TokenType.PersonalReceiverConfirmation, IssuedToType.PersonalReceiver),
-            OrderId = order.Id,
-            ExpirationDate = DateTime.UtcNow.AddDays(30),
-            IsActive = true,
-            UsageLimit = 1,
-            UsedCount = 0,
-            CreatedDate = DateTime.UtcNow
-        };
-
-        await context.WebhookTokens.AddAsync(deliveryToken);
-        await context.WebhookTokens.AddAsync(receiverToken);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
+        httpContext.Response.Htmx(x => x.Redirect("/"));
         return Results.Ok();
+    }
+
+    private IResult ConfirmReceive([FromQuery] string token, [FromQuery] bool success = false)
+    {
+        return new RazorComponentResult<ConfirmReceive>(new
+        {
+            Token = token,
+            Success = success
+        });
+    }
+    
+    private IResult UpdateCheckpoint([FromQuery] string token, [FromQuery] bool success = false)
+    {
+        return new RazorComponentResult<UpdateCheckPoint>(new
+        {
+            Token = token,
+            Success = success
+        });
     }
 }

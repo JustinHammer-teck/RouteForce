@@ -2,10 +2,12 @@
 @using RouteForce.Application.Common.Interfaces
 @using Microsoft.EntityFrameworkCore
 @using RouteForce.Core.Enums
+@using RouteForce.Web.Pages.Shared
 @inject IApplicationDbContext DbContext
+@layout _Layout
 
 <div class="container mx-auto p-8 max-w-3xl">
-    @if (success)
+    @if (Success)
     {
         <div class="alert alert-success mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -14,142 +16,144 @@
             <span>Checkpoint updated successfully!</span>
         </div>
     }
-
-    @if (order != null)
+    else
     {
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-                <h2 class="card-title text-2xl mb-4">Update Delivery Checkpoint</h2>
+        @if (Order != null)
+        {
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">Update Delivery Checkpoint</h2>
 
-                <div class="mb-6 space-y-2">
-                    <div>
-                        <span class="font-semibold">Tracking Number:</span>
-                        <span class="ml-2 text-lg">@order.TrackingNumber</span>
+                    <div class="mb-6 space-y-2">
+                        <div>
+                            <span class="font-semibold">Tracking Number:</span>
+                            <span class="ml-2 text-lg">@Order.TrackingNumber</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Product Reference:</span>
+                            <span class="ml-2">@Order.ProductReferenceId</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Order Status:</span>
+                            <span class="ml-2 badge badge-primary">@Order.Status</span>
+                        </div>
                     </div>
-                    <div>
-                        <span class="font-semibold">Product Reference:</span>
-                        <span class="ml-2">@order.ProductReferenceId</span>
-                    </div>
-                    <div>
-                        <span class="font-semibold">Order Status:</span>
-                        <span class="ml-2 badge badge-primary">@order.Status</span>
-                    </div>
-                </div>
 
-                <div class="divider">Route Progress</div>
+                    <div class="divider">Route Progress</div>
 
-                <div class="space-y-3 mb-6">
-                    @foreach (var cp in checkpoints.OrderBy(c => c.SequenceNumber))
-                    {
-                        <div class="flex items-center space-x-3 p-3 rounded @(cp.Status == RouteCheckPointStatus.Confirmed ? "bg-success bg-opacity-10" : "bg-base-200")">
-                            <div class="flex-shrink-0">
-                                @if (cp.Status == RouteCheckPointStatus.Confirmed)
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                }
-                                else
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-base-content opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                }
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-semibold">@cp.SequenceNumber. @cp.Checkpoint.Name</div>
-                                <div class="text-sm opacity-70">
-                                    Status: @cp.Status
-                                    @if (cp.ActualArrival != null)
+                    <div class="space-y-3 mb-6">
+                        @foreach (var cp in Checkpoints.OrderBy(c => c.SequenceNumber))
+                        {
+                            <div class="flex items-center space-x-3 p-3 rounded @(cp.Status == RouteCheckPointStatus.Confirmed ? "bg-success bg-opacity-10" : "bg-base-200")">
+                                <div class="flex-shrink-0">
+                                    @if (cp.Status == RouteCheckPointStatus.Confirmed)
                                     {
-                                        <span> - Arrived: @cp.ActualArrival.Value.ToString("MMM dd, HH:mm")</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    }
+                                    else
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-base-content opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
                                     }
                                 </div>
-                                @if (!string.IsNullOrEmpty(cp.Notes))
-                                {
-                                    <div class="text-sm italic mt-1">@cp.Notes</div>
-                                }
+                                <div class="flex-1">
+                                    <div class="font-semibold">@cp.SequenceNumber. @cp.Checkpoint.Name</div>
+                                    <div class="text-sm opacity-70">
+                                        Status: @cp.Status
+                                        @if (cp.ActualArrival != null)
+                                        {
+                                            <span> - Arrived: @cp.ActualArrival.Value.ToString("MMM dd, HH:mm")</span>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(cp.Notes))
+                                    {
+                                        <div class="text-sm italic mt-1">@cp.Notes</div>
+                                    }
+                                </div>
                             </div>
+                        }
+                    </div>
+
+                    @if (Checkpoints.Any(c => c.Status == RouteCheckPointStatus.Pending))
+                    {
+                        <div class="divider">Update Checkpoint</div>
+
+                        <form method="post" action="/webhooks/update-checkpoint" class="space-y-4">
+                            <input type="hidden" name="token" value="@Token" />
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Select Checkpoint to Update</span>
+                                </label>
+                                <select name="sequenceNumber" required class="select select-bordered w-full">
+                                    <option value="">Choose checkpoint...</option>
+                                    @foreach (var cp in Checkpoints.Where(c => c.Status == RouteCheckPointStatus.Pending))
+                                    {
+                                        <option value="@cp.SequenceNumber">
+                                            @cp.SequenceNumber. @cp.Checkpoint.Name
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Notes (Optional)</span>
+                                </label>
+                                <textarea name="notes"
+                                          class="textarea textarea-bordered"
+                                          rows="3"
+                                          placeholder="E.g., Package departed facility, In transit to next location..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Update Checkpoint
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>All checkpoints have been confirmed. Delivery complete!</span>
                         </div>
                     }
                 </div>
-
-                @if (checkpoints.Any(c => c.Status == RouteCheckPointStatus.Pending))
-                {
-                    <div class="divider">Update Checkpoint</div>
-
-                    <form method="post" action="/webhooks/update-checkpoint" class="space-y-4">
-                        <input type="hidden" name="token" value="@token" />
-
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">Select Checkpoint to Update</span>
-                            </label>
-                            <select name="sequenceNumber" required class="select select-bordered w-full">
-                                <option value="">Choose checkpoint...</option>
-                                @foreach (var cp in checkpoints.Where(c => c.Status == RouteCheckPointStatus.Pending))
-                                {
-                                    <option value="@cp.SequenceNumber">
-                                        @cp.SequenceNumber. @cp.Checkpoint.Name
-                                    </option>
-                                }
-                            </select>
-                        </div>
-
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">Notes (Optional)</span>
-                            </label>
-                            <textarea name="notes"
-                                      class="textarea textarea-bordered"
-                                      rows="3"
-                                      placeholder="E.g., Package departed facility, In transit to next location..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-block">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Update Checkpoint
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <div class="alert alert-info">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>All checkpoints have been confirmed. Delivery complete!</span>
-                    </div>
-                }
             </div>
-        </div>
-    }
-    else if (error != null)
-    {
-        <div class="alert alert-error">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <span>@error</span>
-        </div>
+        }
+        else if (Error != null)
+        {
+            <div class="alert alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span>@Error</span>
+            </div>
+        }
     }
 </div>
 
 @code {
-    [SupplyParameterFromQuery] public string? token { get; set; }
-    [SupplyParameterFromQuery] public bool success { get; set; }
+    [Parameter] public string? Token { get; set; }
+    [Parameter] public bool Success { get; set; }
 
-    private Core.Models.Order? order;
-    private List<Core.Models.RouteCheckpoint> checkpoints = new();
-    private string? error;
+    private Core.Models.Order? Order;
+    private List<Core.Models.RouteCheckpoint> Checkpoints = new();
+    private string? Error;
 
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(Token))
         {
-            error = "Invalid token. Please check your link.";
+            Error = "Invalid token. Please check your link.";
             return;
         }
 
@@ -158,21 +162,23 @@
             .Include(t => t.Order)
             .ThenInclude(o => o.RouteCheckpoints)
             .ThenInclude(rc => rc.Checkpoint)
-            .FirstOrDefaultAsync(t => t.Token.Value == token);
+            .FirstOrDefaultAsync(t => t.Token.Value == Token);
 
         if (webhookToken == null || !webhookToken.IsActive)
         {
-            error = "Invalid or expired token. Please contact support.";
+            Error = "Invalid or expired token. Please contact support.";
             return;
         }
 
         if (webhookToken.ExpirationDate < DateTime.UtcNow)
         {
-            error = "This token has expired.";
+            Error = "This token has expired.";
             return;
         }
 
-        order = webhookToken.Order;
-        checkpoints = order.RouteCheckpoints.OrderBy(rc => rc.SequenceNumber).ToList();
+        Order = webhookToken.Order;
+        Checkpoints = Order.RouteCheckpoints
+            .Where(x => x.Status == RouteCheckPointStatus.Pending)
+            .OrderBy(rc => rc.SequenceNumber).ToList();
     }
 }

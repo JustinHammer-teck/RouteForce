@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RouteForce.Application.Common.Interfaces;
+using RouteForce.Application.Service.WebhookToken;
 using RouteForce.Core.Enums;
+using RouteForce.Core.Models;
 using RouteForce.Web.Configurations;
 
 namespace RouteForce.Web.Endpoints;
@@ -11,17 +13,22 @@ public class Webhooks : EndpointGroupBase
     public override void Map(RouteGroupBuilder groupBuilder)
     {
         groupBuilder.AllowAnonymous();
-        groupBuilder.MapPost("confirm-receive", ConfirmReceive);
-        groupBuilder.MapPost("update-checkpoint", UpdateCheckpoint);
+        groupBuilder.MapPost("confirm-receive", ConfirmReceive)
+            .DisableAntiforgery();
+        groupBuilder.MapPost("update-checkpoint", UpdateCheckpoint)
+            .DisableAntiforgery();
     }
 
     private async Task<IResult> ConfirmReceive(
         [FromForm] string token,
-        IApplicationDbContext context)
+        IApplicationDbContext context
+        )
     {
         var webhookToken = await context.WebhookTokens
             .Include(t => t.Order)
             .ThenInclude(o => o.RouteCheckpoints)
+            .Include(t => t.Order)
+            .ThenInclude(o => o.WebhookTokens)
             .FirstOrDefaultAsync(t => t.Token.Value == token)
             .ConfigureAwait(false);
 
@@ -52,18 +59,26 @@ public class Webhooks : EndpointGroupBase
         webhookToken.UsedCount++;
         webhookToken.LastUsedDate = DateTime.UtcNow;
 
+        var deliveryToken = webhookToken.Order.WebhookTokens
+            .FirstOrDefault(t => t.Token.Type == TokenType.DeliveryConfirmation && t.IsActive);
+        if (deliveryToken != null)
+        {
+            deliveryToken.IsActive = false;
+        }
+
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        return Results.Redirect($"/order/confirm-delivery?success=true&token={token}");
+        return Results.Redirect($"/orders/confirm-receive?token={token}&success=true");
     }
 
     private async Task<IResult> UpdateCheckpoint(
         [FromForm] string token,
         [FromForm] int sequenceNumber,
         [FromForm] string? notes,
-        IApplicationDbContext context)
-    {
-        var webhookToken = await context.WebhookTokens
+        IApplicationDbContext context,
+        IWebhookService webhookService 
+        )
+    { var webhookToken = await context.WebhookTokens
             .Include(t => t.Order)
             .ThenInclude(o => o.RouteCheckpoints)
             .FirstOrDefaultAsync(t => t.Token.Value == token)
@@ -103,8 +118,8 @@ public class Webhooks : EndpointGroupBase
         var allConfirmed = webhookToken.Order.RouteCheckpoints.All(rc => rc.Status == RouteCheckPointStatus.Confirmed);
         if (allConfirmed)
         {
-            webhookToken.Order.Status = OrderStatus.Delivered;
             webhookToken.Order.ActualDeliveryDate = DateTime.UtcNow;
+            webhookService.CreateReceiverToken(webhookToken.OrderId);
         }
         else if (webhookToken.Order.RouteCheckpoints.Any(rc => rc.Status == RouteCheckPointStatus.Confirmed))
         {
@@ -113,6 +128,6 @@ public class Webhooks : EndpointGroupBase
 
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        return Results.Redirect($"/order/update-checkpoint?token={token}&success=true");
+        return Results.Redirect($"/orders/update-checkpoint?token={token}&success=true");
     }
 }

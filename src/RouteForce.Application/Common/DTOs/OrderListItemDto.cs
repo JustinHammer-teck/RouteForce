@@ -17,4 +17,5 @@ public class OrderListItemDto
     public string? CurrentCheckpoint { get; set; }
     public int CompletedCheckpoints { get; set; }
     public int TotalCheckpoints { get; set; }
+    public string? DeliveryToken { get; set; }
 }

@@ -87,11 +87,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(rc => rc.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(o => o.Notifications)
-            .WithOne(n => n.Order)
-            .HasForeignKey(n => n.OrderId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasMany(o => o.WebhookTokens)
             .WithOne(wt => wt.Order)
             .HasForeignKey(wt => wt.OrderId)
