@@ -11,6 +11,7 @@ using RouteForce.Core.Models;
 using RouteForce.Web.Configurations;
 using RouteForce.Web.Pages.Admin;
 using RouteForce.Web.Pages.Order;
+using RouteForce.Web.Sessions;
 
 namespace RouteForce.Web.Endpoints;
 
@@ -119,7 +120,8 @@ public class Orders : EndpointGroupBase
         IApplicationDbContext context,
         HttpContext httpContext,
         IWebhookService webhookService,
-        IOrderService orderService
+        IOrderService orderService,
+        SessionManager sessionManager
         )
     {
         var businessIdClaim = httpContext.User.FindFirst("BusinessId");
@@ -132,26 +134,28 @@ public class Orders : EndpointGroupBase
         var receiver = await context.PersonalReceivers
             .AsNoTracking()
             .Include(r => r.SavedAddresses)
-            .FirstOrDefaultAsync(r => 
-                r.Id == request.PersonalReceiverId && 
+            .FirstOrDefaultAsync(r =>
+                r.Id == request.PersonalReceiverId &&
                 r.CreatedByBusinessId == businessId);
 
         if (receiver == null)
         {
-            return Results.BadRequest("Invalid receiver");
+            sessionManager.SetSessionValue("OrderError", "Invalid receiver. Please select a valid receiver.");
+            return new RazorComponentResult<_RegisterOrderForm>();
         }
 
         DeliveryAddress? deliveryAddress = null;
         if (request.SelectedDeliveryAddressId.HasValue)
         {
             deliveryAddress = await context.DeliveryAddresses
-                .FirstOrDefaultAsync(a => 
-                    a.Id == request.SelectedDeliveryAddressId.Value && 
+                .FirstOrDefaultAsync(a =>
+                    a.Id == request.SelectedDeliveryAddressId.Value &&
                     a.PersonalReceiverId == request.PersonalReceiverId);
 
             if (deliveryAddress == null)
             {
-                return Results.BadRequest("Invalid delivery address");
+                sessionManager.SetSessionValue("OrderError", "Invalid delivery address. Please select a valid address.");
+                return new RazorComponentResult<_RegisterOrderForm>();
             }
         }
         else
@@ -159,7 +163,8 @@ public class Orders : EndpointGroupBase
             deliveryAddress = receiver.SavedAddresses.FirstOrDefault(a => a.IsDefault);
             if (deliveryAddress == null)
             {
-                return Results.BadRequest("No delivery address selected");
+                sessionManager.SetSessionValue("OrderError", "No delivery address selected. Please select a delivery address.");
+                return new RazorComponentResult<_RegisterOrderForm>();
             }
         }
 
@@ -167,11 +172,14 @@ public class Orders : EndpointGroupBase
             .FirstOrDefaultAsync(c =>
                 c.CheckpointType == CheckpointType.DeliveryAddress &&
                 c.ManagedByBusinessId == businessId &&
-                c.Address.AddressLine == deliveryAddress.Address.AddressLine);
+                c.Address.AddressLine == deliveryAddress.Address.AddressLine &&
+                c.Address.PostalCode == deliveryAddress.Address.PostalCode &&
+                c.ContactPoint.Email == receiver.Email);
 
         if (deliveryCheckpoint == null)
         {
-            return Results.BadRequest("Delivery checkpoint not found");
+            sessionManager.SetSessionValue("OrderError", "Delivery checkpoint not found. Please register the receiver first.");
+            return new RazorComponentResult<_RegisterOrderForm>();
         }
 
         var warehouseCheckpoint = await context.Checkpoints
@@ -182,14 +190,15 @@ public class Orders : EndpointGroupBase
 
         if (warehouseCheckpoint == null)
         {
-            return Results.BadRequest("No active warehouse found. Please set up a warehouse checkpoint first.");
+            sessionManager.SetSessionValue("OrderError", "No active warehouse found. Please set up a warehouse checkpoint first.");
+            return new RazorComponentResult<_RegisterOrderForm>();
         }
 
         await orderService.CreateNewOrderAsync(
-            request, 
-            businessId, 
-            deliveryAddress, 
-            deliveryCheckpoint, 
+            request,
+            businessId,
+            deliveryAddress,
+            deliveryCheckpoint,
             warehouseCheckpoint);
 
         httpContext.Response.Htmx(x => x.Redirect("/"));

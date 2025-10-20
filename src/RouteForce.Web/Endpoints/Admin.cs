@@ -15,7 +15,7 @@ public class Admin : EndpointGroupBase
         groupBuilder.RequireAuthorization(opt => 
             opt.RequireRole("Admin"));
         
-        groupBuilder.MapGet("dashboard", Dashboard);
+        groupBuilder.MapGet("dashboard", Dashboard).AllowAnonymous();
         groupBuilder.MapGet("stats", GetStats);
     }
 

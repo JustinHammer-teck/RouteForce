@@ -1,8 +1,22 @@
 @using RouteForce.Application.Common.DTOs
 @using RouteForce.Application.Common.Interfaces
 @using Microsoft.EntityFrameworkCore
+@using RouteForce.Web.Sessions
 @inject IApplicationDbContext DbContext
 @inject IHttpContextAccessor HttpContextAccessor
+@inject SessionManager SessionManager
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="toast toast-top toast-end">
+        <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>@ErrorMessage</span>
+        </div>
+    </div>
+}
 
 <form hx-post="/orders/register"
       hx-target="#order-form-container"
@@ -120,6 +134,8 @@
 @code {
     private List<Core.Models.PersonalReceiver>? Receivers { get; set; }
     private List<Core.Models.DeliveryAddress>? DeliveryAddresses { get; set; }
+    private string? ErrorMessage { get; set; }
+    private string? SuccessMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -128,6 +144,9 @@
         {
             return;
         }
+
+        ErrorMessage = SessionManager.GetSessionValue("OrderError");
+        SuccessMessage = SessionManager.GetSessionValue("OrderSuccess");
 
         var businessIdClaim = httpContext.User.FindFirst("BusinessId");
         if (businessIdClaim == null || !int.TryParse(businessIdClaim.Value, out var businessId))

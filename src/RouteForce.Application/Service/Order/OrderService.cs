@@ -49,10 +49,10 @@ public class OrderService : IOrderService
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         await _checkpointService.CreateCheckpointsForNewOrder(
-            order.Id, 
-            businessId, 
+            order.Id,
+            businessId,
             warehouseCheckpoint.Id,
-            deliveryAddress.Id, 
+            deliveryCheckpoint.Id,
             request).ConfigureAwait(false);
         
         await _webhookService.CreateDeliveryToken(order.Id);
